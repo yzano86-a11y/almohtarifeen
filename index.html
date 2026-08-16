@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>المحترفين — ترنيب</title>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#101827;color:#fff}
+    .wrap{max-width:520px;margin:auto;padding:24px}
+    .card{background:#182235;border-radius:18px;padding:20px;margin:14px 0}
+    h1{margin-top:0}.muted{color:#aeb8c8}
+    input,button{width:100%;box-sizing:border-box;padding:13px;margin:7px 0;border-radius:10px;border:0}
+    input{background:#27344a;color:#fff}button{background:#4f8cff;color:#fff;font-weight:700;cursor:pointer}
+    button.secondary{background:#344158}.hidden{display:none}.row{display:flex;gap:8px}.row>*{flex:1}
+    #msg{min-height:24px;color:#ffd166}.seat{padding:10px;border:1px solid #35445e;border-radius:10px;margin:6px 0}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>🎴 المحترفين</h1>
+    <div class="muted">ترنيب — النسخة التجريبية</div>
+  </div>
+
+  <div id="auth" class="card">
+    <h2>تسجيل الدخول</h2>
+    <input id="email" type="email" placeholder="البريد الإلكتروني">
+    <input id="password" type="password" placeholder="كلمة المرور">
+    <div class="row">
+      <button onclick="signIn()">دخول</button>
+      <button class="secondary" onclick="signUp()">حساب جديد</button>
+    </div>
+  </div>
+
+  <div id="home" class="card hidden">
+    <h2>مرحبًا 👋</h2>
+    <button onclick="createRoom()">إنشاء غرفة ترنيب</button>
+    <input id="roomCode" maxlength="6" placeholder="رمز الغرفة">
+    <button class="secondary" onclick="joinRoom()">انضمام إلى غرفة</button>
+    <button class="secondary" onclick="signOut()">تسجيل الخروج</button>
+  </div>
+
+  <div id="room" class="card hidden">
+    <h2>غرفة الترنيب</h2>
+    <p>الرمز: <strong id="code"></strong></p>
+    <p id="roomStatus" class="muted">بانتظار اللاعبين...</p>
+    <div id="players"></div>
+    <button class="secondary" onclick="leaveRoom()">العودة</button>
+  </div>
+
+  <div id="msg"></div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://vbhuxkbxkezpbrushxha.supabase.co";
+const SUPABASE_KEY = "sb_publishable_4QMKCQNET_Os8X4tRWYddg_BsRpvHMe";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentRoom = null;
+let channel = null;
+
+const $ = id => document.getElementById(id);
+function msg(t){ $("msg").textContent=t; }
+
+async function refresh(){
+  const {data:{session}} = await supabase.auth.getSession();
+  $("auth").classList.toggle("hidden", !!session);
+  $("home").classList.toggle("hidden", !session || !!currentRoom);
+  if(!session) $("room").classList.add("hidden");
+}
+window.signUp = async ()=>{
+  msg("");
+  const {error}=await supabase.auth.signUp({email:$("email").value,password:$("password").value});
+  msg(error ? error.message : "تم إنشاء الحساب. تحقق من بريدك إذا طُلب منك ذلك.");
+};
+window.signIn = async ()=>{
+  msg("");
+  const {error}=await supabase.auth.signInWithPassword({email:$("email").value,password:$("password").value});
+  msg(error ? error.message : "تم تسجيل الدخول");
+  await refresh();
+};
+window.signOut = async ()=>{ await supabase.auth.signOut(); currentRoom=null; await refresh(); };
+
+window.createRoom = async ()=>{
+  msg("");
+  const {data,error}=await supabase.rpc("create_tarneeb_room");
+  if(error){msg(error.message);return;}
+  await showRoom(data.room_id,data.room_code);
+};
+
+window.joinRoom = async ()=>{
+  msg("");
+  const code=$("roomCode").value.trim().toUpperCase();
+  if(!code){msg("أدخل رمز الغرفة");return;}
+  const {data,error}=await supabase.rpc("join_tarneeb_room",{p_room_code:code});
+  if(error){msg(error.message);return;}
+  await showRoom(data.room_id,data.room_code);
+};
+
+async function showRoom(id,code){
+  currentRoom=id;
+  $("code").textContent=code;
+  $("home").classList.add("hidden");
+  $("room").classList.remove("hidden");
+  await loadPlayers();
+  if(channel) await supabase.removeChannel(channel);
+  channel=supabase.channel("room-"+id)
+    .on("postgres_changes",{event:"*",schema:"public",table:"game_room_players",filter:"room_id=eq."+id},loadPlayers)
+    .on("postgres_changes",{event:"*",schema:"public",table:"game_rooms",filter:"id=eq."+id},loadPlayers)
+    .subscribe();
+}
+
+async function loadPlayers(){
+  if(!currentRoom)return;
+  const {data,error}=await supabase.from("game_room_players")
+    .select("seat,team,player_id")
+    .eq("room_id",currentRoom).order("seat");
+  if(error){msg(error.message);return;}
+  $("players").innerHTML="";
+  for(let seat=1;seat<=4;seat++){
+    const p=(data||[]).find(x=>x.seat===seat);
+    const div=document.createElement("div");
+    div.className="seat";
+    div.textContent=p ? `المقعد ${seat} — الفريق ${p.team} — لاعب متصل` : `المقعد ${seat} — فارغ`;
+    $("players").appendChild(div);
+  }
+  $("roomStatus").textContent=(data||[]).length>=4 ? "الغرفة مكتملة — جاهزة للبدء" : `بانتظار اللاعبين (${(data||[]).length}/4)`;
+}
+window.leaveRoom=async()=>{
+  if(channel) await supabase.removeChannel(channel);
+  currentRoom=null;
+  $("room").classList.add("hidden");
+  await refresh();
+};
+supabase.auth.onAuthStateChange(()=>refresh());
+refresh();
+</script>
+</body>
+</html>
