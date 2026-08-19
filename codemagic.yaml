@@ -11,7 +11,7 @@ workflows:
     scripts:
       - name: Install Node dependencies
         script: |
-          npm install
+          npm install -D typescript
       - name: Install Capacitor Android platform
         script: |
           npx cap add android
