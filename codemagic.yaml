@@ -1,54 +1,40 @@
 workflows:
   android-release:
-    name: المحترفين - Android APK
+    name: المحترفين - Android Release
     max_build_duration: 120
     instance_type: mac_mini_m2
-
     environment:
       node: lts
       java: 21
-
+      groups:
+        - google_play
     scripts:
       - name: تثبيت حزم المشروع
         script: |
           set -e
           npm install
-
-      - name: تثبيت Capacitor 7 المتوافق
-        script: |
-          set -e
-          npm install --save-dev @capacitor/cli@7.4.3
-          npm install @capacitor/core@7.4.3 @capacitor/android@7.4.3
-
       - name: بناء نسخة الويب
         script: |
           set -e
           npm run build
-
-      - name: التحقق من إعداد Capacitor JSON
+      - name: إنشاء ومزامنة Android
         script: |
           set -e
-          rm -f capacitor.config.ts
-          test -f capacitor.config.json
-
-      - name: إنشاء منصة Android
-        script: |
-          set -e
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
-
-      - name: مزامنة Capacitor مع Android
-        script: |
-          set -e
+          if [ ! -d "android" ]; then npx cap add android; fi
           npx cap sync android
-
-      - name: تنظيف وبناء APK
+      - name: بناء Android Release
         script: |
           set -e
           cd android
           chmod +x gradlew
-          ./gradlew clean assembleDebug --stacktrace
-
+          ./gradlew clean bundleRelease assembleRelease --stacktrace
     artifacts:
-      - android/app/build/outputs/apk/debug/*.apk
+      - android/app/build/outputs/apk/release/*.apk
+      - android/app/build/outputs/bundle/release/*.aab
+    publishing:
+      email:
+        recipients:
+          - $CM_EMAIL
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
