@@ -1,0 +1,11 @@
+{
+  "name": "المحترفين — طرنيب",
+  "short_name": "المحترفين",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d1422",
+  "theme_color": "#0d1422",
+  "description": "المحترفين — طرنيب ومنصة اجتماعية"
+}

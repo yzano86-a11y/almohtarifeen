@@ -1,0 +1,17 @@
+{
+  "name": "almohtarifeen-tarneeb",
+  "version": "1.6.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist && cp index.html manifest.webmanifest sw.js dist/",
+    "cap:sync": "npm run build && npx cap sync android",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/android": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
