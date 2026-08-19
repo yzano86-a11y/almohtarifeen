@@ -1,35 +1,60 @@
 workflows:
-  android-release:
-    name: المحترفين - Android Release
+  android-build:
+    name: المحترفين - Android APK
     max_build_duration: 120
     instance_type: mac_mini_m2
 
     environment:
-      vars:
-        PACKAGE_NAME: "com.almohtarifeen.tarneeb"
+      node: latest
 
     scripts:
-      - name: Install Node dependencies
+      - name: تثبيت حزم المشروع
         script: |
-          npm init -y
-npm install --save-dev typescript @capacitor/cli
-npm install @capacitor/core @capacitor/android
-      - name: Install Capacitor Android platform
+          set -e
+          npm install
+
+      - name: تجهيز TypeScript و Capacitor
         script: |
-          npx cap add android
-      - name: Build web assets
+          set -e
+          if [ ! -d "node_modules/typescript" ]; then
+            npm install --save-dev typescript
+          fi
+          if [ ! -d "node_modules/@capacitor/core" ]; then
+            npm install @capacitor/core
+          fi
+          if [ ! -d "node_modules/@capacitor/android" ]; then
+            npm install @capacitor/android
+          fi
+
+      - name: إنشاء مشروع Android عند الحاجة
         script: |
+          set -e
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+
+      - name: بناء نسخة الويب
+        script: |
+          set -e
           npm run build
-      - name: Sync Capacitor Android
+
+      - name: مزامنة Capacitor مع Android
         script: |
+          set -e
           npx cap sync android
-      - name: Set Android SDK location
+
+      - name: تجهيز Android SDK
         script: |
+          set -e
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
-      - name: Build unsigned APK
+
+      - name: بناء APK تجريبي
         script: |
+          set -e
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug
 
     artifacts:
+      - android/app/build/outputs/apk/debug/*.apk
       - android/app/build/outputs/**/*.apk
