@@ -5,7 +5,8 @@ workflows:
     instance_type: mac_mini_m2
 
     environment:
-      node: latest
+      node: lts
+      java: 21
 
     scripts:
       - name: تثبيت حزم المشروع
@@ -13,18 +14,18 @@ workflows:
           set -e
           npm install
 
-      - name: تثبيت أدوات Capacitor
+      - name: تثبيت Capacitor 7 المتوافق
         script: |
           set -e
-          npm install --save-dev @capacitor/cli
-          npm install @capacitor/core @capacitor/android
+          npm install --save-dev @capacitor/cli@7.4.3
+          npm install @capacitor/core@7.4.3 @capacitor/android@7.4.3
 
       - name: بناء نسخة الويب
         script: |
           set -e
           npm run build
 
-      - name: استخدام إعداد Capacitor JSON
+      - name: التحقق من إعداد Capacitor JSON
         script: |
           set -e
           rm -f capacitor.config.ts
@@ -42,12 +43,12 @@ workflows:
           set -e
           npx cap sync android
 
-      - name: بناء APK
+      - name: تنظيف وبناء APK
         script: |
           set -e
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew clean assembleDebug --stacktrace
 
     artifacts:
       - android/app/build/outputs/apk/debug/*.apk
