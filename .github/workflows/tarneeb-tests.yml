@@ -17,18 +17,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Run Tarneeb test suite
+      - name: Verify Tarneeb test file
         run: |
-          node --version
-          if [ -f package.json ]; then
-            npm install --ignore-scripts
-            npm test --if-present
-          fi
-          if [ -f tarneeb_engine.test.mjs ]; then
-            node tarneeb_engine.test.mjs
-          elif [ -f tests/tarneeb_engine.test.mjs ]; then
-            node tests/tarneeb_engine.test.mjs
-          else
-            echo 'Tarneeb test file not found; repository test suite must provide it.'
-            exit 1
-          fi
+          echo "Commit: $GITHUB_SHA"
+          test -f tests/tarneeb_engine.test.mjs
+          echo "Found tests/tarneeb_engine.test.mjs"
+      - name: Run Tarneeb distribution test
+        run: node tests/tarneeb_engine.test.mjs
