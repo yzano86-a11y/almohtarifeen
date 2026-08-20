@@ -1,0 +1,39 @@
+name: Fix guest authentication
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-guest-auth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch guest sign-in
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = "window.guestPlay=()=>{show('landing',false);show('home',false);startGame(true)};"
+          new = "async function ensureGuestSession(){const {data:{session}}=await supabase.auth.getSession();if(session)return session;const {data,error}=await supabase.auth.signInAnonymously();if(error)throw error;return data.session;}window.guestPlay=async()=>{try{msg('جارٍ تجهيز الدخول التجريبي...');await ensureGuestSession();show('landing',false);show('home',false);startGame(true)}catch(e){show('landing',true);show('home',false);msg('تعذر الدخول التجريبي: '+(e?.message||e))}};"
+          if old not in s:
+              raise SystemExit('Expected guestPlay code was not found; refusing to modify the file.')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Commit application patch and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/fix-guest-auth.yml
+          git commit -m "Fix real anonymous guest sign-in" || exit 0
+          git rm .github/workflows/fix-guest-auth.yml
+          git commit -m "Remove temporary guest-auth patch workflow"
+          git push
