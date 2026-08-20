@@ -2,7 +2,9 @@
   "name": "almohtarifeen-tarneeb",
   "version": "1.6.0",
   "private": true,
+  "type": "module",
   "scripts": {
+    "test": "node tests/tarneeb_engine.test.mjs",
     "build": "mkdir -p dist && cp index.html manifest.webmanifest sw.js dist/",
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android"
