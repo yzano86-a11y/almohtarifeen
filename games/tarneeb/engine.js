@@ -1,75 +1,19 @@
-// Tarneeb rules engine — standard 52-card / 13-trick rules, pure state only.
-export const SUITS = ['♠','♥','♦','♣'];
-export const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-const VALUE = Object.fromEntries(RANKS.map((r,i)=>[r,i+2]));
-
-export function createDeck(){
-  return SUITS.flatMap(s => RANKS.map(r => ({s,r,v:VALUE[r]})));
-}
-export function isSameCard(a,b){ return !!a && !!b && a.s===b.s && a.r===b.r; }
-
-export function isLegalBid(state, player, bid){
-  if(state.phase!=='bid'||state.bidTurn!==player) return false;
-  if(bid===null) return true;
-  return Number.isInteger(bid) && bid>=7 && bid<=13 && bid>(state.highBid??6);
-}
-export function applyBid(state,player,bid){
-  if(!isLegalBid(state,player,bid)) throw new Error('Illegal bid');
-  const next=structuredClone(state);
-  next.bids[player]=bid;
-  if(bid!==null && bid>next.highBid){next.highBid=bid;next.bidWinner=player;}
-  next.bidTurn=(player+1)%4;
-  if(next.bidTurn===next.bidStart){
-    if(next.bidWinner===null) throw new Error('At least one player must bid');
-    next.phase='trump'; next.turn=next.bidWinner;
-  }
-  return next;
-}
+// Tarneeb rules engine: standard 52-card deck, 4 players, 13 cards each.
+export const SUITS=['♠','♥','♦','♣'];
+export const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const VALUE=Object.fromEntries(RANKS.map((r,i)=>[r,i+2]));
+export function createDeck(){return SUITS.flatMap(s=>RANKS.map(r=>({s,r,v:VALUE[r]})));}
+export function shuffle(deck){const a=deck.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+export function dealHands(){const hands=[[],[],[],[]];shuffle(createDeck()).forEach((c,i)=>hands[i%4].push(c));hands.forEach(h=>h.sort((a,b)=>SUITS.indexOf(a.s)-SUITS.indexOf(b.s)||b.v-a.v));return hands;}
+export function isSameCard(a,b){return !!a&&!!b&&a.s===b.s&&a.r===b.r;}
+export function isLegalBid(state,player,bid){if(state.phase!=='bid'||state.bidTurn!==player)return false;if(bid===null)return true;return Number.isInteger(bid)&&bid>=7&&bid<=13&&bid>(state.highBid??6);}
+export function applyBid(state,player,bid){if(!isLegalBid(state,player,bid))throw new Error('Illegal bid');const next=structuredClone(state);next.bids[player]=bid;if(bid!==null&&bid>next.highBid){next.highBid=bid;next.bidWinner=player;}next.bidTurn=(player+1)%4;if(next.bidTurn===next.bidStart){if(next.bidWinner===null)throw new Error('At least one player must bid');next.phase='trump';next.turn=next.bidWinner;}return next;}
 export function isLegalTrump(state,player,trump){return state.phase==='trump'&&player===state.bidWinner&&SUITS.includes(trump);}
-export function setTrump(state,player,trump){
-  if(!isLegalTrump(state,player,trump)) throw new Error('Illegal trump');
-  const next=structuredClone(state); next.trump=trump; next.phase='play'; next.turn=next.bidWinner; next.leadSuit=null; next.trick=[]; next.trickNo=0; return next;
-}
-export function legalCards(state,player){
-  if(state.phase!=='play'||state.turn!==player) return [];
-  const hand=state.players[player].hand;
-  if(!state.leadSuit) return hand.slice();
-  const following=hand.filter(c=>c.s===state.leadSuit);
-  return following.length?following:hand.slice();
-}
+export function setTrump(state,player,trump){if(!isLegalTrump(state,player,trump))throw new Error('Illegal trump');const next=structuredClone(state);next.trump=trump;next.phase='play';next.turn=player;return next;}
+export function legalCards(state,player){if(state.phase!=='play'||state.turn!==player)return [];const hand=state.players[player].hand;if(!state.leadSuit)return hand.slice();const following=hand.filter(c=>c.s===state.leadSuit);return following.length?following:hand.slice();}
 export function isLegalCard(state,player,card){return legalCards(state,player).some(c=>isSameCard(c,card));}
-export function cardBeats(candidate,currentWinner,leadSuit,trump){
-  if(!currentWinner) return true;
-  const cTrump=candidate.s===trump,wTrump=currentWinner.s===trump;
-  if(cTrump!==wTrump) return cTrump;
-  if(candidate.s===currentWinner.s) return candidate.v>currentWinner.v;
-  if(candidate.s===leadSuit&&currentWinner.s!==leadSuit) return true;
-  return false;
-}
-export function trickWinner(trick,leadSuit,trump){
-  if(!trick.length) throw new Error('Cannot score empty trick');
-  let best=trick[0]; for(const play of trick.slice(1)) if(cardBeats(play.card,best.card,leadSuit,trump)) best=play; return best.player;
-}
-export function applyCard(state,player,card){
-  if(!isLegalCard(state,player,card)) throw new Error('Illegal card');
-  const next=structuredClone(state),hand=next.players[player].hand;
-  const idx=hand.findIndex(c=>isSameCard(c,card)); if(idx<0) throw new Error('Card not in hand');
-  const played=hand.splice(idx,1)[0]; if(!next.leadSuit) next.leadSuit=played.s; next.trick.push({player,card:played});
-  if(next.trick.length===4){
-    const winner=trickWinner(next.trick,next.leadSuit,next.trump); next.players[winner].tricks++; next.lastTrickWinner=winner; next.turn=winner; next.trick=[]; next.leadSuit=null; next.trickNo++;
-    if(next.trickNo===13){next.phase='round_end';next.roundResult=scoreRound(next);}
-  }else next.turn=(player+1)%4;
-  return next;
-}
-export function scoreRound(state){
-  if(state.phase!=='round_end') throw new Error('Round is not finished');
-  const bidder=state.bidWinner,team=state.players[bidder].team,bid=state.highBid;
-  const made=state.players.filter(p=>p.team===team).reduce((n,p)=>n+p.tricks,0),other=13-made;
-  const scores=state.scores.slice(); if(made>=bid) scores[team]+=made; else scores[team]-=bid; scores[1-team]+=other;
-  return {bidder,team,bid,made,other,scores};
-}
-export function newState(players,bidStart=0,scores=[0,0]){
-  if(!Array.isArray(players)||players.length!==4||players.some(h=>h.length!==13)) throw new Error('Tarneeb requires four 13-card hands');
-  return {phase:'bid',players:players.map((hand,i)=>({team:i%2,hand:hand.slice(),tricks:0})),bidStart,bidTurn:bidStart,highBid:6,bids:[null,null,null,null],bidWinner:null,trump:null,turn:bidStart,leadSuit:null,trick:[],trickNo:0,scores:scores.slice()};
-}
-export function nextRound(previous){if(previous.phase!=='round_end') throw new Error('Round is not finished'); return newState(previous.nextHands??previous.players.map(p=>p.hand.slice()),(previous.bidStart+1)%4,previous.roundResult.scores);}
+export function cardBeats(candidate,currentWinner,leadSuit,trump){if(!currentWinner)return true;const cTrump=candidate.s===trump,wTrump=currentWinner.s===trump;if(cTrump!==wTrump)return cTrump;if(candidate.s===currentWinner.s)return candidate.v>currentWinner.v;if(candidate.s===leadSuit&&currentWinner.s!==leadSuit)return true;return false;}
+export function trickWinner(trick,leadSuit,trump){if(!trick.length)throw new Error('Cannot score empty trick');let best=trick[0];for(const play of trick.slice(1))if(cardBeats(play.card,best.card,leadSuit,trump))best=play;return best.player;}
+export function scoreRound(state){if(state.trickNo!==13)throw new Error('Round is not finished');const bidder=state.bidWinner,team=state.players[bidder].team,bid=state.highBid,made=state.players.filter(p=>p.team===team).reduce((n,p)=>n+p.tricks,0),other=13-made,scores=state.scores.slice();if(made>=bid)scores[team]+=made;else scores[team]-=bid;scores[1-team]+=other;return{bidder,team,bid,made,other,scores};}
+export function applyCard(state,player,card){if(!isLegalCard(state,player,card))throw new Error('Illegal card');const next=structuredClone(state),hand=next.players[player].hand,idx=hand.findIndex(c=>isSameCard(c,card));if(idx<0)throw new Error('Card not in hand');const played=hand.splice(idx,1)[0];if(!next.leadSuit)next.leadSuit=played.s;next.trick.push({player,card:played});if(next.trick.length===4){const winner=trickWinner(next.trick,next.leadSuit,next.trump);next.players[winner].tricks++;next.lastTrickWinner=winner;next.turn=winner;next.trick=[];next.leadSuit=null;next.trickNo++;if(next.trickNo===13){next.phase='round_end';next.roundResult=scoreRound(next);}}else next.turn=(player+1)%4;return next;}
+export function newState(hands,bidStart=0,scores=[0,0]){if(!Array.isArray(hands)||hands.length!==4||hands.some(h=>h.length!==13))throw new Error('Tarneeb requires four 13-card hands');return{phase:'bid',players:hands.map((hand,i)=>({team:i%2,hand:hand.slice(),tricks:0})),bidStart,bidTurn:bidStart,highBid:6,bids:[null,null,null,null],bidWinner:null,trump:null,turn:bidStart,leadSuit:null,trick:[],trickNo:0,scores:scores.slice()};}
