@@ -17,10 +17,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Verify Tarneeb test file
-        run: |
-          echo "Commit: $GITHUB_SHA"
-          test -f tests/tarneeb_engine.test.mjs
-          echo "Found tests/tarneeb_engine.test.mjs"
-      - name: Run Tarneeb distribution test
-        run: node tests/tarneeb_engine.test.mjs
+          cache: npm
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Run Tarneeb acceptance suite
+        run: npm run test
