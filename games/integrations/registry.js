@@ -1,8 +1,7 @@
-// Open-source game integration registry for Al-Mohtarifeen.
-// Only engines with a compatible license should be wired into production.
-// Commercial/proprietary game code is intentionally excluded.
+// Unified game integration registry for Al-Mohtarifeen.
+// Only engines that have actually been wired and tested are marked integrated.
 export const GAME_INTEGRATIONS = {
-  tarneeb: { status: 'native', adapter: '../tarneeb/engine.js', online: true },
+  tarneeb: { status: 'integrated', adapter: '../engines/tarneeb-adapter.js', online: true, source: 'native' },
   backgammon: { status: 'candidate', license: 'MIT', adapter: null, online: true },
   chess: { status: 'candidate', license: 'MIT', adapter: null, online: true },
   uno: { status: 'candidate', license: 'MIT', adapter: null, online: true },
