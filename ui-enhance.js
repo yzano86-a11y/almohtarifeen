@@ -1,3 +1,4 @@
+const css=document.createElement('link');css.rel='stylesheet';css.href='./ui-enhance.css';document.head.appendChild(css);
 const SUITS=new Set(['♠','♥','♦','♣']);
 const splitCard=(value)=>{const t=value.trim();const suit=[...t].findLast(ch=>SUITS.has(ch));if(!suit)return null;const pos=t.lastIndexOf(suit);return{rank:t.slice(0,pos),suit}};
 function decorateHand(){document.querySelectorAll('#hand .cardplay').forEach(btn=>{if(btn.dataset.decorated)return;const c=splitCard(btn.textContent);if(!c)return;btn.textContent='';const r=document.createElement('span');r.className='card-rank';r.textContent=c.rank;const s=document.createElement('span');s.className='card-suit';s.textContent=c.suit;btn.append(r,s);btn.dataset.decorated='1';});}
