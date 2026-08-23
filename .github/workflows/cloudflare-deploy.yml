@@ -31,6 +31,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
+          set -e
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
           echo "Cloudflare API token is present."
 
@@ -38,16 +39,17 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          set -e
+          set -euo pipefail
           response=$(curl -fsSL https://api.cloudflare.com/client/v4/accounts \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json")
-          account_id=$(printf '%s' "$response" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s); if(!j.success||!j.result?.length) process.exit(2); process.stdout.write(j.result[0].id)})")
+          account_id=$(printf '%s' "$response" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s); if(!j.success||!Array.isArray(j.result)||j.result.length===0) process.exit(2); process.stdout.write(j.result[0].id)})")
           test -n "$account_id" || { echo "Could not resolve a Cloudflare account from the API token"; exit 1; }
           echo "Resolved Cloudflare account: ${account_id:0:6}******"
           echo "CLOUDFLARE_ACCOUNT_ID=$account_id" >> "$GITHUB_ENV"
 
-      - name: Deploy to Cloudflare Workers
+      - name: Deploy static assets to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx wrangler deploy --config wrangler.jsonc --no-bundle
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy --config wrangler.jsonc
