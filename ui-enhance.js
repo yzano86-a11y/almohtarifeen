@@ -1,4 +1,4 @@
-const css=document.createElement('link');css.rel='stylesheet';css.href='./ui-enhance.css?v=20260823-v2';document.head.appendChild(css);
+const css=document.createElement('link');css.rel='stylesheet';css.href='./ui-enhance.css?v=20260823-v3';document.head.appendChild(css);
 const SUITS=new Set(['♠','♥','♦','♣']);
 const splitCard=value=>{const t=value.trim();const m=t.match(/(10|[2-9]|J|Q|K|A)([♠♥♦♣])$/);return m?{rank:m[1],suit:m[2]}:null};
 const countForRank=r=>{const n=Number(r);return Number.isFinite(n)&&n>=2&&n<=10?n:0};
