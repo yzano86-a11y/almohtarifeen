@@ -25,7 +25,5 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install dependencies
-        run: npm install --ignore-scripts
-      - name: Run Tarneeb acceptance suite
-        run: npm run test
+      - name: Run dependency-free Tarneeb acceptance suite
+        run: node tests/tarneeb_engine.test.mjs
