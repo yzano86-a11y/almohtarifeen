@@ -46,12 +46,16 @@ jobs:
           import fs from 'node:fs';
           const path = 'dist/app.js';
           let s = fs.readFileSync(path, 'utf8');
-          const from = "function msg(t){$('msg').textContent=t||''}";
-          const to = "function msg(t){const e=$('msg');if(e)e.textContent=t||''}";
-          if (!s.includes(from)) throw new Error('Expected UI message function was not found');
-          s = s.replace(from, to);
+          const replacements = [
+            ["const $=id=>document.getElementById(id)", "const $=id=>document.getElementById(id)||document.createElement('div')"],
+            ["function msg(t){$('msg').textContent=t||''}", "function msg(t){const e=$('msg');if(e)e.textContent=t||''}"]
+          ];
+          for (const [from,to] of replacements) {
+            if (!s.includes(from)) throw new Error(`Expected UI compatibility pattern was not found: ${from}`);
+            s = s.replace(from,to);
+          }
           fs.writeFileSync(path, s);
-          console.log('Patched UI navigation message guard.');
+          console.log('Patched UI navigation compatibility.');
           NODE
 
       - name: Normalize Cloudflare credentials
