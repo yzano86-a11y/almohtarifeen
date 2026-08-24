@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node tests/tarneeb_engine.test.mjs",
-    "build": "rm -rf dist && mkdir -p dist && cp index.html app.js style.css ui-enhance.js ui-enhance.css pro-ui.css social-ui.css manifest.webmanifest sw.js dist/ && cp -R games dist/games",
+    "build": "rm -rf dist && mkdir -p dist && cp index.html app.js style.css ui-enhance.js ui-enhance.css pro-ui.css social-ui.css reference-layout.css manifest.webmanifest sw.js dist/ && cp -R games dist/games",
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android"
   },
