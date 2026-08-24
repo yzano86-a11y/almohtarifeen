@@ -40,6 +40,20 @@ jobs:
       - name: Build web app
         run: npm run build
 
+      - name: Patch UI navigation compatibility
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const path = 'dist/app.js';
+          let s = fs.readFileSync(path, 'utf8');
+          const from = "function msg(t){$('msg').textContent=t||''}";
+          const to = "function msg(t){const e=$('msg');if(e)e.textContent=t||''}";
+          if (!s.includes(from)) throw new Error('Expected UI message function was not found');
+          s = s.replace(from, to);
+          fs.writeFileSync(path, s);
+          console.log('Patched UI navigation message guard.');
+          NODE
+
       - name: Normalize Cloudflare credentials
         env:
           RAW_CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
