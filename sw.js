@@ -1,5 +1,5 @@
-const CACHE='almohtarifeen-v1-6';
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html','./app.js','./style.css','./manifest.webmanifest']))));
+const CACHE='almohtarifeen-v1-7-approved';
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html','./app.js','./style.css','./ui-enhance.js','./ui-enhance.css','./pro-ui.css','./social-ui.css','./manifest.webmanifest']))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET') return;
