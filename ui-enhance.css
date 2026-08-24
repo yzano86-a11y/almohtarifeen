@@ -68,3 +68,80 @@ body{margin:0!important}
 @media(min-width:601px){
  .approved-home{max-width:760px!important;margin:auto!important}
 }
+
+
+/* Cross-platform responsive layout — phone, tablet, laptop and desktop */
+*{box-sizing:border-box}
+html{width:100%;min-width:320px;overflow-x:hidden}
+body{width:100%;min-width:320px;overflow-x:hidden}
+.app{width:100%!important;max-width:1440px!important;margin:0 auto!important;padding-left:clamp(8px,2vw,28px)!important;padding-right:clamp(8px,2vw,28px)!important}
+.approved-home{width:100%!important;max-width:1440px!important;margin:0 auto!important;min-height:100svh!important}
+.approved-home-head{max-width:1380px;margin:0 auto}
+.approved-banner{max-width:1380px;margin-left:auto!important;margin-right:auto!important}
+.stories,.composer,.post{max-width:1380px;margin-left:auto!important;margin-right:auto!important}
+.approved-bottom{max-width:900px!important;border-radius:22px 22px 0 0}
+@media(min-width:768px){
+ .approved-home{padding-left:24px!important;padding-right:24px!important}
+ .approved-home-head{height:76px!important}
+ .approved-brand strong{font-size:24px!important}
+ .approved-banner{min-height:220px!important;height:auto!important;padding:28px 38px!important}
+ .approved-banner strong,.approved-banner b{font-size:38px!important}
+ .crown{font-size:120px!important}
+ .stories{gap:10px!important}
+ .story{flex-basis:90px!important;height:125px!important}
+ .story-avatar,.story.create span{width:58px!important;height:58px!important}
+ .composer,.post{border-radius:18px!important}
+ .post-image{height:260px!important}
+ .approved-bottom{height:72px!important}
+}
+@media(min-width:1024px){
+ .approved-home{padding-left:40px!important;padding-right:40px!important}
+ .approved-home-head{height:84px!important}
+ .approved-banner{min-height:270px!important;padding:42px 56px!important}
+ .approved-banner strong,.approved-banner b{font-size:48px!important}
+ .crown{font-size:150px!important}
+ .story{flex-basis:100px!important;height:140px!important}
+ .composer,.post{max-width:1100px!important}
+ .post-image{height:330px!important}
+ .approved-bottom{max-width:760px!important}
+}
+@media(min-width:1280px){
+ .app{padding-left:48px!important;padding-right:48px!important}
+ .approved-home{padding-left:56px!important;padding-right:56px!important}
+ .approved-home-head{height:92px!important}
+ .approved-banner{min-height:320px!important;max-width:1280px!important;padding:50px 72px!important}
+ .approved-banner strong,.approved-banner b{font-size:58px!important}
+ .crown{font-size:180px!important}
+ .composer,.post{max-width:1180px!important}
+ .post-image{height:390px!important}
+}
+/* Desktop/tablet Tarneeb table: use viewport space instead of mobile dimensions */
+@media(min-width:701px){
+ .approved-table{max-width:1440px!important;margin:0 auto!important;padding:0 18px 18px!important}
+ .table-topbar{height:70px!important;padding:0 20px!important;font-size:12px!important}
+ .table-topbar strong{font-size:22px!important}
+ .approved-table-info{font-size:10px!important;padding:10px 18px!important}
+ .approved-table-felt{height:min(68vh,760px)!important;min-height:560px!important;max-width:1180px!important;margin:0 auto!important;border-width:10px!important}
+ .approved-avatar{width:72px!important;height:72px!important;font-size:21px!important}
+ .approved-player{font-size:11px!important}
+ .approved-player small{font-size:9px!important}
+ .approved-player.top{top:18px!important}
+ .approved-player.left{left:18px!important}
+ .approved-player.right{right:18px!important}
+ .approved-player.bottom{bottom:18px!important}
+ .approved-center .trick{width:300px!important;height:160px!important}
+ .approved-center .played{min-width:68px!important;height:96px!important}
+ .approved-trump{font-size:11px!important;padding:8px 15px!important}
+ .approved-table-actions{max-width:600px!important;bottom:25px!important}
+ .approved-table-actions button{font-size:11px!important;padding:11px!important}
+}
+@media(min-width:1100px){
+ .approved-table-felt{height:min(72vh,820px)!important;min-height:620px!important}
+ .approved-player.top{top:25px!important}
+ .approved-player.left{left:28px!important}
+ .approved-player.right{right:28px!important}
+ .approved-player.bottom{bottom:25px!important}
+ .approved-avatar{width:82px!important;height:82px!important}
+ .approved-center .trick{width:360px!important;height:190px!important}
+ .approved-center .played{min-width:76px!important;height:108px!important}
+}
