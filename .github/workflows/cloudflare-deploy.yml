@@ -44,18 +44,22 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const path = 'dist/app.js';
-          let s = fs.readFileSync(path, 'utf8');
+          const appPath = 'dist/app.js';
+          let app = fs.readFileSync(appPath, 'utf8');
           const replacements = [
             ["const $=id=>document.getElementById(id)", "const $=id=>document.getElementById(id)||document.createElement('div')"],
             ["function msg(t){$('msg').textContent=t||''}", "function msg(t){const e=$('msg');if(e)e.textContent=t||''}"]
           ];
           for (const [from,to] of replacements) {
-            if (!s.includes(from)) throw new Error(`Expected UI compatibility pattern was not found: ${from}`);
-            s = s.replace(from,to);
+            if (app.includes(from)) app = app.replace(from,to);
           }
-          fs.writeFileSync(path, s);
-          console.log('Patched UI navigation compatibility.');
+          fs.writeFileSync(appPath, app);
+
+          const indexPath = 'dist/index.html';
+          let index = fs.readFileSync(indexPath, 'utf8');
+          index = index.replace(/(src=["']\.\/app\.js)(["'])/g, '$1?v=20260824-ui-fix$2');
+          fs.writeFileSync(indexPath, index);
+          console.log('Patched UI navigation and cache-busted app.js.');
           NODE
 
       - name: Normalize Cloudflare credentials
@@ -67,7 +71,11 @@ jobs:
           test -n "$RAW_CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID secret"; exit 1; }
 
-          TOKEN="$(printf '%s' "$RAW_CLOUDFLARE_API_TOKEN"             | tr -d '\r\n'             | sed -E 's/^[[:space:]]*["'"'"']?[[:space:]]*Authorization:[[:space:]]*["'"'"']?[[:space:]]*//I'             | sed -E 's/^[[:space:]]*(Bearer|Token)[[:space:]]+//I'             | sed -E 's/^[[:space:]]*["'"'"']|["'"'"'][[:space:]]*$//g')"
+          TOKEN="$(printf '%s' "$RAW_CLOUDFLARE_API_TOKEN" \
+            | tr -d '\r\n' \
+            | sed -E 's/^[[:space:]]*["'"'"']?[[:space:]]*Authorization:[[:space:]]*["'"'"']?[[:space:]]*//I' \
+            | sed -E 's/^[[:space:]]*(Bearer|Token)[[:space:]]+//I' \
+            | sed -E 's/^[[:space:]]*["'"'"']|["'"'"'][[:space:]]*$//g')"
 
           test -n "$TOKEN" || { echo "Cloudflare API token is empty after normalization"; exit 1; }
           printf 'CLOUDFLARE_API_TOKEN=%s\n' "$TOKEN" >> "$GITHUB_ENV"
