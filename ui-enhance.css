@@ -25,3 +25,46 @@ body{background:#05050b!important}.app{max-width:1180px!important;padding:0 10px
 .auth-drawer-card{width:min(100%,430px);height:100%;overflow:auto;padding:28px 22px 34px;background:radial-gradient(circle at 50% 15%,#21133d 0,#0a0a13 42%,#05060b 100%);border-left:1px solid #3b2b5f;box-shadow:-20px 0 60px #000;position:relative;text-align:center;color:#fff}
 .auth-close{position:absolute;top:18px;left:18px;width:46px;height:46px;border-radius:50%;border:1px solid #45414f;background:#171722;color:#fff;font-size:32px;line-height:1}
 .auth-brand{margin-top:20px;display:flex;flex-direction:column;align-items:center}.auth-brand span{font-size:48px;color:#9d45ff;text-shadow:0 0 20px #8b35ff}.auth-brand strong{font-size:30px}.auth-brand small{color:#e6b94d;margin-top:2px}.auth-cards{margin:26px auto 18px;font-size:52px;letter-spacing:10px;transform:rotate(-5deg);color:#f2c34d}.auth-drawer-card h2{margin:8px 0 0;font-size:22px}.auth-drawer-card h1{margin:0;color:#9b35ff;font-size:40px}.auth-subtitle{color:#aaa8b8;margin:6px 0 18px}.auth-guest{width:100%;border:0;border-radius:16px;padding:17px;background:linear-gradient(135deg,#a438ff,#6e14e8);color:#fff;font-size:18px;font-weight:800;box-shadow:0 10px 30px #7c22ff33}.auth-guest-note{display:block;color:#9e9bab;margin:8px 0 18px}.auth-form{display:grid;gap:8px;text-align:right;background:#0d0e18;border:1px solid #29283a;border-radius:16px;padding:15px}.auth-form label{font-size:12px;color:#b7b5c3}.auth-form input{background:#171824;border:1px solid #363448;color:#fff;border-radius:11px;padding:12px;direction:ltr}.auth-submit,.auth-signup{width:100%;margin-top:10px;border-radius:13px;padding:13px;font-weight:800}.auth-submit{border:1px solid #8736e9;background:#171225;color:#fff}.auth-signup{border:1px solid #292b3d;background:#0c0d15;color:#fff}.auth-or{display:flex;align-items:center;gap:10px;color:#888596;margin:20px 0}.auth-or:before,.auth-or:after{content:"";height:1px;background:#303040;flex:1}.auth-socials{display:grid;gap:9px}.auth-socials button{border:1px solid #292b3d;background:#10111b;color:#eee;border-radius:12px;padding:12px;font-size:14px;text-align:left}.auth-privacy{font-size:11px;color:#777686;margin-top:18px}
+
+
+/* Mobile screen-fit patch — keep the approved design, only scale to the device viewport */
+html,body{width:100%;min-width:0;overflow-x:hidden}
+body{margin:0!important}
+.app{width:100%!important;max-width:100%!important;box-sizing:border-box!important;padding-left:0!important;padding-right:0!important}
+.approved-home{width:100%!important;max-width:100%!important;box-sizing:border-box!important;padding:4px 0 calc(70px + env(safe-area-inset-bottom))!important;min-height:100svh!important}
+.approved-home-head{height:58px!important;padding:2px 10px!important}
+.approved-logo{width:39px!important;height:39px!important;font-size:21px!important}
+.approved-brand strong{font-size:18px!important}.approved-brand small{font-size:8px!important}
+.approved-head-actions{gap:5px!important}.approved-head-actions button{width:36px!important;height:36px!important;font-size:17px!important}
+.approved-cats{padding:4px 2px!important;gap:0!important}.approved-cats button{font-size:9px!important;min-width:0!important}
+.approved-cats small{font-size:7px!important}
+.approved-banner{margin:6px 5px 10px!important;min-height:0!important;height:118px!important;padding:12px 14px!important;border-radius:15px!important}
+.approved-banner strong,.approved-banner b{font-size:21px!important;line-height:1.2!important}
+.approved-banner button{margin-top:7px!important;padding:7px 10px!important;font-size:9px!important;border-radius:10px!important}
+.crown{font-size:62px!important}
+.stories{gap:5px!important;padding:0 5px 9px!important}
+.story{flex-basis:61px!important;height:82px!important;border-radius:12px!important;gap:4px!important}
+.story-avatar,.story.create span{width:39px!important;height:39px!important;font-size:20px!important}
+.story small{font-size:8px!important}
+.composer,.post{margin:0 5px 8px!important;border-radius:13px!important}
+.composer-top{padding:9px!important;font-size:11px!important}
+.mini-avatar{width:34px!important;height:34px!important}
+.composer-actions button,.post-actions button{padding:9px 2px!important;font-size:8px!important}
+.post{padding:9px!important}.post-head{gap:6px!important}.post-head strong{font-size:11px!important}.post-head small{font-size:8px!important}
+.post p{font-size:11px!important;line-height:1.55!important;margin:9px 3px!important}
+.post-image{height:118px!important;font-size:23px!important}.post-image small{font-size:8px!important}
+.approved-bottom{height:60px!important;padding-bottom:max(3px,env(safe-area-inset-bottom))!important}
+.approved-bottom button{font-size:9px!important}.approved-bottom .main-play{width:50px!important;height:50px!important;margin-bottom:21px!important;font-size:23px!important}
+
+@media(max-height:700px) and (max-width:600px){
+ .approved-home-head{height:52px!important}
+ .approved-banner{height:100px!important;margin-bottom:7px!important}
+ .crown{font-size:52px!important}
+ .story{height:72px!important}
+ .stories{padding-bottom:6px!important}
+ .composer-top{padding:7px!important}
+ .post-image{height:100px!important}
+}
+@media(min-width:601px){
+ .approved-home{max-width:760px!important;margin:auto!important}
+}
