@@ -44,7 +44,9 @@ jobs:
           set -euo pipefail
           test -n "$RAW_CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID secret"; exit 1; }
-          TOKEN="$(printf '%s' "$RAW_CLOUDFLARE_API_TOKEN" | sed -e 's/^Bearer[[:space:]]*//' -e 's/^Token[[:space:]]*//' | tr -d '\r\n')"
+
+          TOKEN="$(printf '%s' "$RAW_CLOUDFLARE_API_TOKEN"             | tr -d '\r\n'             | sed -E 's/^[[:space:]]*["'"'"']?[[:space:]]*Authorization:[[:space:]]*["'"'"']?[[:space:]]*//I'             | sed -E 's/^[[:space:]]*(Bearer|Token)[[:space:]]+//I'             | sed -E 's/^[[:space:]]*["'"'"']|["'"'"'][[:space:]]*$//g')"
+
           test -n "$TOKEN" || { echo "Cloudflare API token is empty after normalization"; exit 1; }
           printf 'CLOUDFLARE_API_TOKEN=%s\n' "$TOKEN" >> "$GITHUB_ENV"
           printf 'CLOUDFLARE_ACCOUNT_ID=%s\n' "$CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_ENV"
