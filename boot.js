@@ -15,7 +15,7 @@ function revealGameShell(){
 async function ensureAppLoaded(){
   if(typeof window.guestPlay==='function') return true;
   if(!booting){
-    booting=import('./app.js?v=20260825-boot4').catch(err=>{
+    booting=import('./app.js?v=20260825-boot5').catch(err=>{
       console.error('app.js boot failed',err);
       booting=null;
       return false;
@@ -48,6 +48,8 @@ async function launchGuest(event){
     launching=false;
   }
 }
+// Expose the same launcher used by the enhanced UI so every entry point shares one path.
+window.__launchGuest=launchGuest;
 function isGuestButton(el){
   return !!el&&el.tagName==='BUTTON'&&((el.getAttribute('onclick')||'').includes('guestPlay'));
 }
