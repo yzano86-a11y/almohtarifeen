@@ -57,22 +57,32 @@ jobs:
 
           const indexPath = 'dist/index.html';
           let index = fs.readFileSync(indexPath, 'utf8');
-          index = index.replace(/(src=["']\.\/app\.js)(["'])/g, '$1?v=20260824-ui-fix$2');
           index = index.replace(/<script\s+src=["']\.\/app\.js(?:\?[^"']*)?["']\s*><\/script>/g, '<script type="module" src="./app.js?v=20260825-module"></script>');
-          if (!/<script[^>]+type=["']module["'][^>]+src=["'][^"']*app\.js/i.test(index)) {
-            if (index.includes('</body>')) index = index.replace('</body>', '<script type="module" src="./app.js?v=20260825-module"></script></body>');
-            else index += '<script type="module" src="./app.js?v=20260825-module"></script>';
+          if (!index.includes('type="module" src="./app.js')) {
+            const tag = '<script type="module" src="./app.js?v=20260825-module"></script>';
+            index = index.includes('</body>') ? index.replace('</body>', tag + '</body>') : index + tag;
           }
           fs.writeFileSync(indexPath, index);
-          console.log('Patched UI navigation, module loading, cache-busted app.js, and ensured module script injection.');
+          console.log('Patched module loading and cache-busted app.js.');
           NODE
 
       - name: Verify deployed entrypoint wiring
         run: |
           set -euo pipefail
-          grep -Eo '<script[^>]+type=["'"']module["'"'][^>]+src=["'"'][^"'"']*app\.js[^"'"']*["'"']' dist/index.html
-          test -f dist/app.js
-          echo "Entrypoint wiring verified: index.html loads dist/app.js as an ES module."
+          node - <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('dist/index.html', 'utf8');
+          const hasModuleApp = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*app\.js[^"']*["'][^>]*>/i.test(html);
+          if (!hasModuleApp) {
+            console.error('Entrypoint wiring missing: index.html does not load app.js as an ES module.');
+            process.exit(1);
+          }
+          if (!fs.existsSync('dist/app.js')) {
+            console.error('dist/app.js is missing.');
+            process.exit(1);
+          }
+          console.log('Entrypoint wiring verified: index.html loads dist/app.js as an ES module.');
+          NODE
 
       - name: Normalize Cloudflare credentials
         env:
@@ -82,13 +92,7 @@ jobs:
           set -euo pipefail
           test -n "$RAW_CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID secret"; exit 1; }
-
-          TOKEN="$(printf '%s' "$RAW_CLOUDFLARE_API_TOKEN" \
-            | tr -d '\r\n' \
-            | sed -E 's/^[[:space:]]*["'"'"']?[[:space:]]*Authorization:[[:space:]]*["'"'"']?[[:space:]]*//I' \
-            | sed -E 's/^[[:space:]]*(Bearer|Token)[[:space:]]+//I' \
-            | sed -E 's/^[[:space:]]*["'"'"']|["'"'"'][[:space:]]*$//g')"
-
+          TOKEN="$(printf '%s' "$RAW_CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]*["'"'"']?[[:space:]]*Authorization:[[:space:]]*["'"'"']?[[:space:]]*//I' | sed -E 's/^[[:space:]]*(Bearer|Token)[[:space:]]+//I' | sed -E 's/^[[:space:]]*["'"'"']|["'"'"'][[:space:]]*$//g')"
           test -n "$TOKEN" || { echo "Cloudflare API token is empty after normalization"; exit 1; }
           printf 'CLOUDFLARE_API_TOKEN=%s\n' "$TOKEN" >> "$GITHUB_ENV"
           printf 'CLOUDFLARE_ACCOUNT_ID=%s\n' "$CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_ENV"
