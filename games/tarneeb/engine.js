@@ -25,7 +25,7 @@ if(typeof window!=='undefined'){
   const ONLINE_KEY='sb_publishable_Jyr7D3mH7WRXfG5V1v7gcw_I3QhtL3j';
   let onlineGameId=null,onlineChannel=null,onlineSupabase=null;
   const esc=s=>String(s).replace(/'/g,"\\'");
-  async function onlineClient(){if(!onlineSupabase){const m=await import('https://esm.sh/@supabase/supabase-js@2');onlineSupabase=m.createClient(ONLINE_URL,ONLINE_KEY);}return onlineSupabase;}
+  async function onlineClient(){if(!onlineSupabase){const m=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/+esm');onlineSupabase=m.createClient(ONLINE_URL,ONLINE_KEY);}return onlineSupabase;}
   async function onlineAction(action,value){const sb=await onlineClient();const{data,error}=await sb.rpc('tarneeb_apply_action',{p_game_id:onlineGameId,p_action:action,p_value:value||null});if(error)throw error;return data;}
   function onlineMsg(t){const e=document.getElementById('msg');if(e)e.textContent=t||'';}
   async function onlineState(){const sb=await onlineClient();const g=await sb.from('tarneeb_games').select('id,status,current_seat,bid,bidder_seat,trump,trick_no,team1_score,team2_score,state,room_code').eq('id',onlineGameId).single();if(g.error)throw g.error;const me=await sb.rpc('tarneeb_current_player',{p_game_id:onlineGameId});let player=me.data;if(Array.isArray(player))player=player[0];if(!player){const q=await sb.from('tarneeb_players').select('seat,hand,tricks,bid,user_id').eq('game_id',onlineGameId);const session=await sb.auth.getSession();player=(q.data||[]).find(p=>p.user_id===session.data.session?.user.id);}
