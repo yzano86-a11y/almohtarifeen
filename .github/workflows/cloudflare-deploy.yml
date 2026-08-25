@@ -58,8 +58,9 @@ jobs:
           const indexPath = 'dist/index.html';
           let index = fs.readFileSync(indexPath, 'utf8');
           index = index.replace(/(src=["']\.\/app\.js)(["'])/g, '$1?v=20260824-ui-fix$2');
+          index = index.replace(/<script\s+src=["']\.\/app\.js(?:\?[^"']*)?["']\s*><\/script>/g, '<script type="module" src="./app.js?v=20260825-module"></script>');
           fs.writeFileSync(indexPath, index);
-          console.log('Patched UI navigation and cache-busted app.js.');
+          console.log('Patched UI navigation, module loading, and cache-busted app.js.');
           NODE
 
       - name: Normalize Cloudflare credentials
