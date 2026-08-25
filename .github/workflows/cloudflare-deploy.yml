@@ -81,9 +81,20 @@ jobs:
           fs.writeFileSync(indexPath, index);
           fs.copyFileSync('boot.js','dist/boot.js');
 
+          // The UI click bridge is part of the runtime surface and must be deployed with the app.
+          fs.copyFileSync('ui-click-bridge.js','dist/ui-click-bridge.js');
+          const bridgeTag = '<script src="./ui-click-bridge.js?v=20260826-bridge"></script>';
+          if (!index.includes('src="./ui-click-bridge.js')) {
+            index = index.includes('</body>') ? index.replace('</body>', bridgeTag + '</body>') : index + bridgeTag;
+          }
+          fs.writeFileSync(indexPath, index);
+
+          // social-ui.js is loaded dynamically by app.js and therefore must also be present in dist.
+          fs.copyFileSync('social-ui.js','dist/social-ui.js');
+
           // Prevent a stale HTML shell from hiding the new launcher after deployment.
           fs.writeFileSync('dist/_headers', `/\n  Cache-Control: no-store\n/index.html\n  Cache-Control: no-store\n`);
-          console.log('Patched module loading, direct browser guest launcher, runtime visibility guard, boot bridge, and HTML cache policy.');
+          console.log('Patched module loading, direct browser guest launcher, runtime visibility guard, boot bridge, UI click bridge, social runtime, and HTML cache policy.');
           NODE
 
       - name: Verify deployed entrypoint wiring and game shell
@@ -95,24 +106,31 @@ jobs:
           const css = fs.readFileSync('dist/reference-layout.css', 'utf8');
           const app = fs.readFileSync('dist/app.js', 'utf8');
           const boot = fs.readFileSync('dist/boot.js', 'utf8');
+          const bridge = fs.readFileSync('dist/ui-click-bridge.js', 'utf8');
+          const social = fs.readFileSync('dist/social-ui.js', 'utf8');
           const engine = fs.readFileSync('dist/games/tarneeb/engine.js', 'utf8');
           const headers = fs.readFileSync('dist/_headers', 'utf8');
           const hasModuleApp = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*app\.js[^"']*["'][^>]*>/i.test(html);
           const hasBoot = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*boot\.js[^"']*["'][^>]*>/i.test(html);
+          const hasBridge = /<script\b[^>]*src=["'][^"']*ui-click-bridge\.js[^"']*["'][^>]*>/i.test(html);
           const required = [
             ['dist/app.js', app],
             ['dist/boot.js', boot],
+            ['dist/ui-click-bridge.js', bridge],
+            ['dist/social-ui.js', social],
             ['dist/games/tarneeb/engine.js', engine]
           ];
-          if (!hasModuleApp || !hasBoot) throw new Error('Entrypoint module wiring is incomplete.');
+          if (!hasModuleApp || !hasBoot || !hasBridge) throw new Error('Entrypoint module wiring is incomplete.');
           for (const [name,text] of required) if (!text) throw new Error(`${name} is empty or missing.`);
           if (!html.includes('window.__launchGuest') || !html.includes('onclick="__launchGuest(event)"')) throw new Error('Direct browser guest launcher wiring is incomplete.');
           if (!app.includes('window.guestPlay') || !app.includes("import('./games/tarneeb/engine.js')")) throw new Error('guestPlay/startGame/engine import wiring is incomplete.');
           if (!boot.includes('ensureAppLoaded') || !boot.includes('revealGameShell')) throw new Error('Guest boot bridge is incomplete.');
+          if (!bridge.includes('window.guestPlay') || !bridge.includes('missing handler')) throw new Error('UI click bridge is incomplete.');
+          if (!app.includes("import('./social-ui.js")) throw new Error('social-ui runtime import is missing.');
           if (!engine.includes('dealHands') || !engine.includes('newState') || !engine.includes('applyBid') || !engine.includes('setTrump') || !engine.includes('applyCard')) throw new Error('Tarneeb engine runtime functions are missing.');
           if (!css.includes('Runtime visibility guard') || !css.includes('#approvedHome.hidden') || !css.includes('#game:not(.hidden)')) throw new Error('Runtime game visibility guard is missing.');
           if (!headers.includes('Cache-Control: no-store')) throw new Error('HTML cache policy is missing.');
-          console.log('Full runtime verification passed: direct launcher, entrypoint, boot bridge, game shell, CSS visibility, Tarneeb engine, and cache policy.');
+          console.log('Full runtime verification passed: direct launcher, entrypoint, boot bridge, UI bridge, social runtime, game shell, CSS visibility, Tarneeb engine, and cache policy.');
           NODE
 
       - name: Normalize Cloudflare credentials
@@ -129,5 +147,15 @@ jobs:
           printf 'CLOUDFLARE_ACCOUNT_ID=%s\n' "$CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_ENV"
           echo "Cloudflare credentials are configured."
 
+      - name: Install browser smoke-test runtime
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+
       - name: Deploy static assets to Cloudflare Workers
         run: npx wrangler deploy --config wrangler.jsonc
+
+      - name: Run real browser guest-play smoke test
+        env:
+          LIVE_APP_URL: https://almohtarifeen.yzano86.workers.dev/
+        run: node tests/live_guest_smoke.mjs
