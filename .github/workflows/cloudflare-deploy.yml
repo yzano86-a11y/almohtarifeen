@@ -72,9 +72,18 @@ jobs:
           if (!index.includes('src="./boot.js')) {
             index = index.includes('</body>') ? index.replace('</body>', bootTag + '</body>') : index + bootTag;
           }
+
+          // Browser-direct guest launcher: do not depend on the module boot bridge or inline guestPlay being ready.
+          const directBoot = `<script>window.__launchGuest=async function(e){try{if(e){e.preventDefault();e.stopPropagation();}const hide=['approvedHome','landing','home','room','socialHub','auth'];for(const id of hide){const el=document.getElementById(id);if(el)el.classList.add('hidden');}const game=document.getElementById('game');if(game)game.classList.remove('hidden');document.body.classList.add('game-active');const state=document.getElementById('stateInfo');if(state)state.textContent='جاري فتح طاولة طرنيب…';if(typeof window.guestPlay!=='function')await import('./app.js?v=20260825-directboot');if(typeof window.guestPlay!=='function')throw new Error('تعذر تحميل تشغيل اللعبة.');await window.guestPlay();}catch(err){console.error('Direct guest launch failed',err);const state=document.getElementById('stateInfo');if(state)state.textContent=err?.message||'تعذر فتح طاولة طرنيب';const log=document.getElementById('log');if(log)log.textContent='خطأ تشغيل اللعبة: '+(err?.message||err);}}</script>`;
+          if (!index.includes('window.__launchGuest')) index = index.includes('</body>') ? index.replace('</body>', directBoot + '</body>') : index + directBoot;
+          index = index.replace(/onclick=["']backLanding\(\);guestPlay\(\)["']/g, 'onclick="__launchGuest(event)"');
+          index = index.replace(/onclick=["']guestPlay\(\)["']/g, 'onclick="__launchGuest(event)"');
           fs.writeFileSync(indexPath, index);
           fs.copyFileSync('boot.js','dist/boot.js');
-          console.log('Patched module loading, cache-busted app.js, runtime visibility guard, and guest game boot bridge.');
+
+          // Prevent a stale HTML shell from hiding the new launcher after deployment.
+          fs.writeFileSync('dist/_headers', `/\n  Cache-Control: no-store\n/index.html\n  Cache-Control: no-store\n`);
+          console.log('Patched module loading, direct browser guest launcher, runtime visibility guard, boot bridge, and HTML cache policy.');
           NODE
 
       - name: Verify deployed entrypoint wiring and game shell
@@ -87,6 +96,7 @@ jobs:
           const app = fs.readFileSync('dist/app.js', 'utf8');
           const boot = fs.readFileSync('dist/boot.js', 'utf8');
           const engine = fs.readFileSync('dist/games/tarneeb/engine.js', 'utf8');
+          const headers = fs.readFileSync('dist/_headers', 'utf8');
           const hasModuleApp = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*app\.js[^"']*["'][^>]*>/i.test(html);
           const hasBoot = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*boot\.js[^"']*["'][^>]*>/i.test(html);
           const required = [
@@ -96,11 +106,13 @@ jobs:
           ];
           if (!hasModuleApp || !hasBoot) throw new Error('Entrypoint module wiring is incomplete.');
           for (const [name,text] of required) if (!text) throw new Error(`${name} is empty or missing.`);
+          if (!html.includes('window.__launchGuest') || !html.includes('onclick="__launchGuest(event)"')) throw new Error('Direct browser guest launcher wiring is incomplete.');
           if (!app.includes('window.guestPlay') || !app.includes("import('./games/tarneeb/engine.js')")) throw new Error('guestPlay/startGame/engine import wiring is incomplete.');
           if (!boot.includes('ensureAppLoaded') || !boot.includes('revealGameShell')) throw new Error('Guest boot bridge is incomplete.');
           if (!engine.includes('dealHands') || !engine.includes('newState') || !engine.includes('applyBid') || !engine.includes('setTrump') || !engine.includes('applyCard')) throw new Error('Tarneeb engine runtime functions are missing.');
           if (!css.includes('Runtime visibility guard') || !css.includes('#approvedHome.hidden') || !css.includes('#game:not(.hidden)')) throw new Error('Runtime game visibility guard is missing.');
-          console.log('Full runtime verification passed: entrypoint, boot bridge, game shell, CSS visibility, and Tarneeb engine are present.');
+          if (!headers.includes('Cache-Control: no-store')) throw new Error('HTML cache policy is missing.');
+          console.log('Full runtime verification passed: direct launcher, entrypoint, boot bridge, game shell, CSS visibility, Tarneeb engine, and cache policy.');
           NODE
 
       - name: Normalize Cloudflare credentials
