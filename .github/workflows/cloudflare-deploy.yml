@@ -62,8 +62,13 @@ jobs:
             const tag = '<script type="module" src="./app.js?v=20260825-module"></script>';
             index = index.includes('</body>') ? index.replace('</body>', tag + '</body>') : index + tag;
           }
+          const bootTag = '<script type="module" src="./boot.js?v=20260825-boot"></script>';
+          if (!index.includes('src="./boot.js')) {
+            index = index.includes('</body>') ? index.replace('</body>', bootTag + '</body>') : index + bootTag;
+          }
           fs.writeFileSync(indexPath, index);
-          console.log('Patched module loading and cache-busted app.js.');
+          fs.copyFileSync('boot.js','dist/boot.js');
+          console.log('Patched module loading, cache-busted app.js, and installed guest game boot bridge.');
           NODE
 
       - name: Verify deployed entrypoint wiring
@@ -73,15 +78,20 @@ jobs:
           const fs = require('fs');
           const html = fs.readFileSync('dist/index.html', 'utf8');
           const hasModuleApp = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*app\.js[^"']*["'][^>]*>/i.test(html);
+          const hasBoot = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*boot\.js[^"']*["'][^>]*>/i.test(html);
           if (!hasModuleApp) {
             console.error('Entrypoint wiring missing: index.html does not load app.js as an ES module.');
             process.exit(1);
           }
-          if (!fs.existsSync('dist/app.js')) {
-            console.error('dist/app.js is missing.');
+          if (!hasBoot) {
+            console.error('Guest game boot bridge missing from index.html.');
             process.exit(1);
           }
-          console.log('Entrypoint wiring verified: index.html loads dist/app.js as an ES module.');
+          if (!fs.existsSync('dist/app.js') || !fs.existsSync('dist/boot.js')) {
+            console.error('Required runtime files are missing from dist.');
+            process.exit(1);
+          }
+          console.log('Entrypoint wiring verified: app.js and boot.js are loaded as ES modules.');
           NODE
 
       - name: Normalize Cloudflare credentials
