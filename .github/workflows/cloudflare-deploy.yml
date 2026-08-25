@@ -59,9 +59,20 @@ jobs:
           let index = fs.readFileSync(indexPath, 'utf8');
           index = index.replace(/(src=["']\.\/app\.js)(["'])/g, '$1?v=20260824-ui-fix$2');
           index = index.replace(/<script\s+src=["']\.\/app\.js(?:\?[^"']*)?["']\s*><\/script>/g, '<script type="module" src="./app.js?v=20260825-module"></script>');
+          if (!/<script[^>]+type=["']module["'][^>]+src=["'][^"']*app\.js/i.test(index)) {
+            if (index.includes('</body>')) index = index.replace('</body>', '<script type="module" src="./app.js?v=20260825-module"></script></body>');
+            else index += '<script type="module" src="./app.js?v=20260825-module"></script>';
+          }
           fs.writeFileSync(indexPath, index);
-          console.log('Patched UI navigation, module loading, and cache-busted app.js.');
+          console.log('Patched UI navigation, module loading, cache-busted app.js, and ensured module script injection.');
           NODE
+
+      - name: Verify deployed entrypoint wiring
+        run: |
+          set -euo pipefail
+          grep -Eo '<script[^>]+type=["'"']module["'"'][^>]+src=["'"'][^"'"']*app\.js[^"'"']*["'"']' dist/index.html
+          test -f dist/app.js
+          echo "Entrypoint wiring verified: index.html loads dist/app.js as an ES module."
 
       - name: Normalize Cloudflare credentials
         env:
