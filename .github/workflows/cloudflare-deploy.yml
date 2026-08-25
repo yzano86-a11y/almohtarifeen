@@ -55,6 +55,12 @@ jobs:
           }
           fs.writeFileSync(appPath, app);
 
+          const cssPath = 'dist/reference-layout.css';
+          let css = fs.readFileSync(cssPath, 'utf8');
+          const runtimeOverride = `\n/* Runtime visibility guard: .hidden must win over the reference canvas !important rules. */\nbody.reference-layout #approvedHome.hidden,body.reference-layout #auth.hidden,body.reference-layout #landing.hidden,body.reference-layout #home.hidden,body.reference-layout #room.hidden,body.reference-layout #socialHub.hidden,body.reference-layout #game.hidden{display:none!important}\nbody.reference-layout #game:not(.hidden){display:block!important;position:relative!important;width:100%!important;height:auto!important;min-height:100%!important;overflow:auto!important}\nbody.reference-layout.game-active #approvedHome,body.reference-layout.game-active #auth{display:none!important}\n`;
+          if (!css.includes('Runtime visibility guard')) css += runtimeOverride;
+          fs.writeFileSync(cssPath, css);
+
           const indexPath = 'dist/index.html';
           let index = fs.readFileSync(indexPath, 'utf8');
           index = index.replace(/<script\s+src=["']\.\/app\.js(?:\?[^"']*)?["']\s*><\/script>/g, '<script type="module" src="./app.js?v=20260825-module"></script>');
@@ -68,30 +74,33 @@ jobs:
           }
           fs.writeFileSync(indexPath, index);
           fs.copyFileSync('boot.js','dist/boot.js');
-          console.log('Patched module loading, cache-busted app.js, and installed guest game boot bridge.');
+          console.log('Patched module loading, cache-busted app.js, runtime visibility guard, and guest game boot bridge.');
           NODE
 
-      - name: Verify deployed entrypoint wiring
+      - name: Verify deployed entrypoint wiring and game shell
         run: |
           set -euo pipefail
           node - <<'NODE'
           const fs = require('fs');
           const html = fs.readFileSync('dist/index.html', 'utf8');
+          const css = fs.readFileSync('dist/reference-layout.css', 'utf8');
+          const app = fs.readFileSync('dist/app.js', 'utf8');
+          const boot = fs.readFileSync('dist/boot.js', 'utf8');
+          const engine = fs.readFileSync('dist/games/tarneeb/engine.js', 'utf8');
           const hasModuleApp = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*app\.js[^"']*["'][^>]*>/i.test(html);
           const hasBoot = /<script\b[^>]*type=["']module["'][^>]*src=["'][^"']*boot\.js[^"']*["'][^>]*>/i.test(html);
-          if (!hasModuleApp) {
-            console.error('Entrypoint wiring missing: index.html does not load app.js as an ES module.');
-            process.exit(1);
-          }
-          if (!hasBoot) {
-            console.error('Guest game boot bridge missing from index.html.');
-            process.exit(1);
-          }
-          if (!fs.existsSync('dist/app.js') || !fs.existsSync('dist/boot.js')) {
-            console.error('Required runtime files are missing from dist.');
-            process.exit(1);
-          }
-          console.log('Entrypoint wiring verified: app.js and boot.js are loaded as ES modules.');
+          const required = [
+            ['dist/app.js', app],
+            ['dist/boot.js', boot],
+            ['dist/games/tarneeb/engine.js', engine]
+          ];
+          if (!hasModuleApp || !hasBoot) throw new Error('Entrypoint module wiring is incomplete.');
+          for (const [name,text] of required) if (!text) throw new Error(`${name} is empty or missing.`);
+          if (!app.includes('window.guestPlay') || !app.includes("import('./games/tarneeb/engine.js')")) throw new Error('guestPlay/startGame/engine import wiring is incomplete.');
+          if (!boot.includes('ensureAppLoaded') || !boot.includes('revealGameShell')) throw new Error('Guest boot bridge is incomplete.');
+          if (!engine.includes('dealHands') || !engine.includes('newState') || !engine.includes('applyBid') || !engine.includes('setTrump') || !engine.includes('applyCard')) throw new Error('Tarneeb engine runtime functions are missing.');
+          if (!css.includes('Runtime visibility guard') || !css.includes('#approvedHome.hidden') || !css.includes('#game:not(.hidden)')) throw new Error('Runtime game visibility guard is missing.');
+          console.log('Full runtime verification passed: entrypoint, boot bridge, game shell, CSS visibility, and Tarneeb engine are present.');
           NODE
 
       - name: Normalize Cloudflare credentials
