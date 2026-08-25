@@ -2,6 +2,7 @@
 // It guarantees that the game action has a live app.js module before invoking guestPlay().
 let booting=null;
 let launching=false;
+let lastLaunchAt=0;
 function revealGameShell(){
   const hide=['approvedHome','landing','home','room','socialHub','auth'];
   for(const id of hide){const el=document.getElementById(id);if(el)el.classList.add('hidden');}
@@ -14,8 +15,9 @@ function revealGameShell(){
 async function ensureAppLoaded(){
   if(typeof window.guestPlay==='function') return true;
   if(!booting){
-    booting=import('./app.js?v=20260825-boot3').catch(err=>{
+    booting=import('./app.js?v=20260825-boot4').catch(err=>{
       console.error('app.js boot failed',err);
+      booting=null;
       return false;
     });
   }
@@ -23,6 +25,9 @@ async function ensureAppLoaded(){
   return ok!==false&&typeof window.guestPlay==='function';
 }
 async function launchGuest(event){
+  const now=Date.now();
+  if(now-lastLaunchAt<700)return;
+  lastLaunchAt=now;
   if(event){event.preventDefault();event.stopImmediatePropagation();}
   if(launching)return;
   launching=true;
@@ -52,5 +57,5 @@ document.addEventListener('click',event=>{
 },true);
 document.addEventListener('pointerup',event=>{
   const el=event.target?.closest?.('button');
-  if(isGuestButton(el)&&!launching)launchGuest(event);
+  if(isGuestButton(el))launchGuest(event);
 },true);
