@@ -1,4 +1,4 @@
-import{createClient}from'https://esm.sh/@supabase/supabase-js@2';
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/+esm';
 const sb=createClient('https://gzgngkywjyanxicmwxlc.supabase.co','sb_publishable_Jyr7D3mH7WRXfG5V1v7gcw_I3QhtL3j');
 const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]));
 const initials=n=>(String(n||'م').trim()[0]||'م').toUpperCase();
