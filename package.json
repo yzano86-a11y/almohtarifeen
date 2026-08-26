@@ -8,7 +8,7 @@
     "test:engine": "node tests/tarneeb_engine.test.mjs",
     "test:adapter": "node tests/tarneeb_adapter.test.mjs",
     "test:ui": "node tests/ui_runtime_wiring.test.mjs",
-    "build": "rm -rf dist && mkdir -p dist && cp index.html app.js style.css ui-enhance.js ui-enhance.css pro-ui.css social-ui.css reference-layout.css manifest.webmanifest sw.js dist/ && cp -R games dist/games",
+    "build": "rm -rf dist && mkdir -p dist && cp index.html app.js style.css ui-enhance.js ui-enhance.css pro-ui.css social-ui.css reference-layout.css manifest.webmanifest sw.js dist/ && cp -R games dist/games && cp -R almolook dist/almolook",
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android"
   },
