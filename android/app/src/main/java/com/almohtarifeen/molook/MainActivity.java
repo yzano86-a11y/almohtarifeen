@@ -7,10 +7,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
+    private WebView web;
     private static final String UI_URL = "https://raw.githubusercontent.com/yzano86-a11y/almohtarifeen/main/index.html";
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        WebView web = new WebView(this);
+        web = new WebView(this);
         web.setWebViewClient(new WebViewClient());
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
@@ -24,7 +25,7 @@ public class MainActivity extends Activity {
         web.loadUrl(UI_URL);
     }
     @Override public void onBackPressed() {
-        WebView web = (WebView) findViewById(android.R.id.content).getRootView().findViewById(android.R.id.content);
-        super.onBackPressed();
+        if (web != null && web.canGoBack()) web.goBack();
+        else super.onBackPressed();
     }
 }
