@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#090a16">
   <meta name="application-name" content="الملوك">
-  <meta name="description" content="الملوك — الواجهة الأساسية للنظام">
+  <meta name="description" content="الملوك — منصة اجتماعية وترفيهية">
   <title>الملوك</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="pro-ui.css">
@@ -16,41 +16,38 @@
 <body>
   <main id="app" class="app" aria-label="الملوك">
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true"><span>♠</span><span>♦</span></div>
-        <div><strong>الملوك</strong><small>منصة اجتماعية وترفيهية</small></div>
-      </div>
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><span>♠</span><span>♦</span></div><div><strong>الملوك</strong><small>منصة اجتماعية وترفيهية</small></div></div>
       <div class="online"><i class="dot"></i><span>النظام جاهز</span></div>
     </header>
-
     <section class="landing-shell">
       <section class="panel hero" id="home">
         <div class="hero-glow" aria-hidden="true"></div>
-        <div class="deck-logo" aria-hidden="true">
-          <div class="card-back"><b>♠</b><span>الملوك</span></div>
-          <div class="card-front">♦</div>
-        </div>
-        <div class="eyebrow">أهلاً بك في</div>
-        <h1><em>الملوك</em></h1>
-        <p class="subtitle">واجهة النظام الأساسية جاهزة، بدون لعبة أو وظائف إضافية مفروضة.</p>
-        <div class="stats" aria-label="معلومات النظام">
-          <div class="stat-pill"><b>✓</b><span>الواجهة</span></div>
-          <div class="stat-pill"><b>✓</b><span>النظام</span></div>
-          <div class="stat-pill"><b>0</b><span>ألعاب مفعلة</span></div>
-        </div>
+        <div class="deck-logo" aria-hidden="true"><div class="card-back"><b>♠</b><span>الملوك</span></div><div class="card-front">♦</div></div>
+        <div class="eyebrow">أهلاً بك في</div><h1><em>الملوك</em></h1>
+        <p class="subtitle">منصة اجتماعية وترفيهية تجمع الألعاب والتواصل في مكان واحد.</p>
+        <div class="stats" aria-label="معلومات النظام"><div class="stat-pill"><b>✓</b><span>الواجهة</span></div><div class="stat-pill"><b>✓</b><span>النظام</span></div><div class="stat-pill"><b>3</b><span>ألعاب مفعلة</span></div></div>
         <div class="actions">
-          <button class="btn btn-primary btn-hero" type="button">الدخول إلى الملوك</button>
-          <button class="btn btn-secondary" type="button">التجربة</button>
+          <button class="btn btn-primary btn-hero" type="button" data-game="tarneeb">طرنيب</button>
+          <button class="btn btn-secondary" type="button" data-game="backgammon">طاولة الزهر</button>
+          <button class="btn btn-secondary" type="button" data-game="checkers">داما</button>
         </div>
-        <p class="hint">هذه النسخة تحافظ على الواجهة فقط ولا تشغّل نظام لعبة.</p>
+        <p class="hint">اختر لعبة لفتحها.</p>
       </section>
-
       <section class="feature-grid" aria-label="مكونات النظام">
         <article class="feature"><div class="feature-icon">👤</div><strong>الملف الشخصي</strong><span>مكان مخصص لبيانات المستخدم وملفه.</span></article>
-        <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة جاهزة لإضافة ميزات التواصل لاحقاً.</span></article>
-        <article class="feature"><div class="feature-icon">★</div><strong>النظام</strong><span>بنية واجهة قابلة للتوسعة بدون ربط لعبة حالياً.</span></article>
+        <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة اجتماعية قابلة للتوسعة.</span></article>
+        <article class="feature"><div class="feature-icon">★</div><strong>الألعاب</strong><span>طرنيب وطاولة الزهر وداما.</span></article>
       </section>
     </section>
   </main>
+  <script type="module">
+    import { launchGame } from './games/registry.js';
+    document.querySelectorAll('[data-game]').forEach(button => {
+      button.addEventListener('click', () => {
+        try { launchGame(button.dataset.game); }
+        catch (error) { console.error('Game launch failed', error); alert('تعذر فتح اللعبة حالياً'); }
+      });
+    });
+  </script>
 </body>
 </html>
