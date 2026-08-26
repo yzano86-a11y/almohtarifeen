@@ -1,89 +1,27 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07101d"><meta name="description" content="المحترفين — طرنيب احترافي"><title>المحترفين — طرنيب</title>
-<link rel="stylesheet" href="./style.css?v=20260823-v4"><link rel="stylesheet" href="./ui-enhance.css?v=20260823-v4"><link rel="stylesheet" href="./pro-ui.css?v=20260823-v4"><link rel="stylesheet" href="./social-ui.css?v=20260823-v4"><link rel="stylesheet" href="./reference-layout.css?v=20260824-ref">
-</head><body class="reference-layout"><main class="app">
-<header class="topbar"><div class="brand"><div class="brand-mark"><span>♠</span><span>♥</span></div><div><strong>المحترفين</strong><small>طرنيب احترافي</small></div></div><div class="online"><i class="dot"></i><span>متصل الآن</span></div></header>
-<section id="approvedHome" class="approved-home" aria-label="الواجهة المعتمدة">
-  <header class="approved-home-head">
-    <div class="approved-brand">
-      <div class="approved-logo">♠</div>
-      <div><strong>المحترفين</strong><small>منصة المحترفين الأولى</small></div>
-    </div>
-    <div class="approved-head-actions">
-      <button type="button" onclick="openSocial('vip')" aria-label="VIP">♛</button>
-      <button type="button" class="bell" onclick="openSocial('friends')" aria-label="الإشعارات">♧<b>3</b></button>
-      <button type="button" onclick="openApprovedMenu()" aria-label="المزيد">⋮</button>
-    </div>
-  </header>
-  <nav class="approved-cats" aria-label="التنقل الرئيسي">
-    <button onclick="openSocial('vip')">المزيد<br><small>VIP المميز</small></button>
-    <button onclick="openSocial('vip')">VIP<br><small>المميز</small></button>
-    <button onclick="openSocial('profile')">المحفظة<br><small>الجوائز</small></button>
-    <button onclick="openSocial('friends')">الأشخاص<br><small>القريبون</small></button>
-    <button onclick="guestPlay()">الألعاب<br><small>طرنيب</small></button>
-    <button onclick="openSocial('profile')">الحسابات<br><small>الموثقة</small></button>
-  </nav>
-  <section class="approved-banner">
-    <div><strong>كن محترفاً</strong><b>وانضم إلى الأفضل</b><button onclick="openSocial('vip')">♛ ترقَّ الآن إلى VIP</button></div>
-    <div class="crown">♛</div>
-  </section>
-  <section class="stories" aria-label="القصص">
-    <button class="story create" onclick="createStory()"><span>＋</span><small>إنشاء قصة</small></button>
-    <button class="story active" onclick="openSocial('profile')"><span class="story-avatar">م</span><small>قصتك</small></button>
-    <button class="story" onclick="openSocial('profile')"><span class="story-avatar">د</span><small>دعاء</small></button>
-    <button class="story" onclick="openSocial('profile')"><span class="story-avatar">م</span><small>محمد</small></button>
-    <button class="story" onclick="openSocial('profile')"><span class="story-avatar">ن</span><small>نور</small></button>
-    <button class="story" onclick="openSocial('profile')"><span class="story-avatar">أ</span><small>أحمد</small></button>
-  </section>
-  <section class="composer">
-    <div class="composer-top"><span class="mini-avatar">م</span><span>بماذا تفكر يا محترف؟</span></div>
-    <div class="composer-actions">
-      <button onclick="createPost()">😊 شعور</button><button onclick="createPost()">🔴 بث مباشر</button><button onclick="createPost()">▣ فيديو</button><button onclick="createPost()">▧ صورة</button>
-    </div>
-  </section>
-  <article class="post">
-    <div class="post-head"><span class="mini-avatar">م</span><div><strong>ميسم المحترف <i>✓</i></strong><small>◉ منذ 5 دقائق</small></div><button aria-label="المزيد">•••</button></div>
-    <p>النجاح ليس صدفة،<br>بل هو نتيجة العمل المستمر والتعلم كل يوم. 💪</p>
-    <div class="post-image">المحترفين<br><small>طرنيب • لعب احترافي</small></div>
-    <div class="post-actions"><button>♡ إعجاب</button><button>💬 تعليق</button><button>♧ مشاركة</button><button>✦ حفظ</button></div>
-  </article>
-  <nav class="approved-bottom" aria-label="شريط التنقل">
-    <button onclick="openSocial('profile')">◯<span>الملف الشخصي</span></button>
-    <button onclick="openSocial('friends')">♧<b>3</b><span>الإشعارات</span></button>
-    <button class="main-play" onclick="guestPlay()">＋</button>
-    <button onclick="openSocial('friends')">♧<span>المجموعات</span></button>
-    <button class="selected" onclick="showApprovedHome()">⌂<span>الرئيسية</span></button>
-  </nav>
-</section>
-<section id="landing" class="landing-shell"><section class="panel hero"><div class="hero-glow"></div><div class="deck-logo"><div class="card-back"><b>م</b><span>PRO</span></div><div class="card-front">♥</div></div><div class="eyebrow">تجربة طرنيب من الجيل الجديد</div><h1>المحترفين <em>في الطرنيب</em></h1><p class="subtitle">طاولة واقعية، ورق واضح، لعب سلس ومنافسة أشرس.</p><div class="stats"><div class="stat-pill"><b>52</b><span>ورقة</span></div><div class="stat-pill"><b>4</b><span>لاعبين</span></div><div class="stat-pill"><b>13</b><span>أكلة</span></div></div><button class="btn btn-primary btn-hero" onclick="guestPlay()"><span>🎮</span> دخول تجريبي — العب الآن</button><div class="actions"><button class="btn btn-secondary" onclick="openLogin()"><span>🔐</span> تسجيل الدخول</button><button class="btn btn-ghost" onclick="openSignup()"><span>✦</span> إنشاء حساب</button></div><p class="hint"><span>✓</span> جرّب الطاولة مباشرة بدون تسجيل</p></section><div class="feature-grid"><div class="feature"><div class="feature-icon">🃏</div><strong>ورق واقعي</strong><span>بطاقات كبيرة وواضحة وحركة ناعمة</span></div><div class="feature"><div class="feature-icon">⚡</div><strong>لعب سريع</strong><span>توزيع وانتقال بدون تقطيع</span></div><div class="feature"><div class="feature-icon">🏆</div><strong>تنافس احترافي</strong><span>فرق ونتائج وغرف خاصة</span></div></div></section>
-<section id="auth" class="auth-drawer reference-visible" aria-label="تسجيل الدخول">
-  <div class="auth-drawer-card" dir="rtl">
-    <button class="auth-close" type="button" onclick="backLanding()" aria-label="إغلاق">×</button>
-    <div class="auth-brand"><span>♛</span><strong>المحترفين</strong><small>منصة المحترفين الأولى</small></div>
-    <div class="auth-cards">♠ ♥</div>
-    <h2>مرحباً بك في</h2><h1>المحترفين</h1>
-    <p class="auth-subtitle">لعب، تواصل، تنافس وكن الأفضل</p>
-    <button class="auth-guest" type="button" onclick="backLanding();guestPlay()">🎮 دخول تجريبي — العب الآن</button>
-    <small class="auth-guest-note">جرّب الطاولة مباشرة بدون تسجيل</small>
-    <button class="auth-submit auth-primary-login" type="button" onclick="openLogin()" id="authSubmit">🔒 تسجيل الدخول<small>لديك حساب بالفعل؟</small></button>
-    <button class="auth-signup" type="button" onclick="openSignup()">♙ إنشاء حساب جديد<small>انضم إلى مجتمع المحترفين</small></button>
-    <div class="auth-form">
-      <label>البريد الإلكتروني</label><input id="email" type="email" placeholder="example@email.com">
-      <label>كلمة المرور</label><input id="password" type="password" placeholder="••••••••">
-    </div>
-    <div class="auth-or"><span>أو تابع باستخدام</span></div>
-    <div class="auth-socials"><button type="button">G&nbsp; Google</button><button type="button">● Apple</button><button type="button">f&nbsp; Facebook</button></div>
-    <p class="auth-privacy">🛡️ نحن نهتم بخصوصيتك وأمان حسابك</p>
-    <div id="authMsg" class="msg"></div>
-    <h3 id="authTitle" class="hidden">تسجيل الدخول</h3>
-  </div>
-</section>
-<section id="home" class="panel hidden"><div class="section-title"><div><span class="eyebrow">المحترفين</span><h2>مركزك</h2></div><button class="back" onclick="backLanding()">خروج</button></div><button class="btn btn-primary" onclick="createRoom()">＋ إنشاء غرفة طرنيب</button><div class="field"><input id="roomCode" maxlength="6" placeholder="أدخل رمز الغرفة"></div><button class="btn btn-secondary" onclick="joinRoom()">🚪 انضمام إلى غرفة</button><button class="btn btn-gold" onclick="guestPlay()">🎮 لعب تجريبي ضد الذكاء الاصطناعي</button><div class="social-hub"><div class="eyebrow">ميزات المحترفين</div><div class="social-grid"><button class="social-card" onclick="openSocial('profile')"><div class="social-icon">👤</div><strong>ملفي</strong><span>الاسم والتوثيق وVIP</span></button><button class="social-card" onclick="openSocial('feed')"><div class="social-icon">📰</div><strong>المنشورات</strong><span>نشر وتفاعل اجتماعي</span></button><button class="social-card" onclick="openSocial('friends')"><div class="social-icon">👥</div><strong>الأصدقاء</strong><span>قائمة الأصدقاء والحالة</span></button><button class="social-card" onclick="openSocial('vip')"><div class="social-icon">👑</div><strong>VIP</strong><span>التوثيق والطلبات</span></button><button class="social-card" onclick="openSocial('nearby')"><div class="social-icon">📍</div><strong>القريبون</strong><span>أشخاص شاركوا موقعهم</span></button></div></div></section>
-<section id="room" class="panel hidden"><div class="section-title"><div><span class="eyebrow">غرفة خاصة</span><h2>غرفة الطرنيب</h2></div><button class="back" onclick="leaveRoom()">رجوع</button></div><div id="code" class="room-code">------</div><p id="roomStatus" class="subtitle"></p><div id="players"></div><button id="startBtn" class="btn btn-primary" onclick="startRoomGame()" disabled>بدء اللعبة</button></section>
-<section id="socialHub" class="panel hidden"><div class="section-title"><div><span class="eyebrow">المحترفين</span><h2 id="socialTitle">ملفي الشخصي</h2></div><button class="back" onclick="closeSocial()">رجوع</button></div><div class="social-nav"><button class="btn btn-secondary" onclick="openSocial('profile')">ملفي</button><button class="btn btn-secondary" onclick="openSocial('feed')">المنشورات</button><button class="btn btn-secondary" onclick="openSocial('friends')">الأصدقاء</button><button class="btn btn-secondary" onclick="openSocial('vip')">VIP</button><button class="btn btn-secondary" onclick="openSocial('nearby')">القريبون</button></div><div id="socialStatus" class="status-line"></div><div id="socialContent"></div></section>
-<section id="game" class="game-screen hidden"><div class="game-head"><div class="game-title"><div class="mini-logo">♥</div><div><strong>المحترفين</strong><span id="roundLabel">الجولة 1 · الأكلة 1/13</span></div></div><div class="game-head-actions"><div class="match-score"><span>فريق 1</span><b id="score0">0</b><i>:</i><b id="score1">0</b><span>فريق 2</span></div><button class="back" onclick="backHome()">خروج</button></div></div>
-<div class="table-wrap"><div class="table-felt"><div class="player-seat player-top"><div class="avatar avatar-blue">٢</div><div class="player-name">اللاعب 2 <small>فريق 2</small></div><div class="back-cards"><i></i><i></i><i></i><i></i><i></i></div></div><div class="player-seat player-right"><div class="avatar avatar-gold">٣</div><div class="player-name">اللاعب 3 <small>فريق 1</small></div><div class="side-cards"><i></i><i></i><i></i></div></div><div class="player-seat player-left"><div class="avatar avatar-red">٤</div><div class="player-name">اللاعب 4 <small>فريق 2</small></div><div class="side-cards"><i></i><i></i><i></div></div><div class="table-center"><div class="turn-badge" id="stateInfo">المزايدة</div><div id="trick" class="trick"></div><div class="table-logo"><span>♠</span><b>المحترفين</b><small>طرنيب</small></div></div><div class="player-seat player-bottom"><div class="player-name"><strong>أنت</strong><small>فريق 1 · لاعب 1</small></div><div class="avatar avatar-you">١</div></div></div></div>
-<section id="bidBox" class="control-panel hidden"><h3>المزايدة</h3><p id="bidInfo" class="subtitle"></p><div id="bids" class="grid"></div></section><section id="trumpBox" class="control-panel hidden"><h3>اختيار الحكم</h3><div id="trumps" class="grid"></div></section><div class="hand-area"><div class="hand-head"><h3>أوراقك</h3><span>13 ورقة</span></div><div id="hand" class="cards"></div></div><div id="log" class="log"></div><div id="msg" class="msg"></div></section>
-</main><script type="module" src="./app.js?v=20260823-v4"></script></body></html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="application-name" content="الملوك">
+  <title>الملوك</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="pro-ui.css">
+  <link rel="stylesheet" href="reference-layout.css">
+  <link rel="stylesheet" href="social-ui.css">
+  <link rel="stylesheet" href="ui-enhance.css">
+</head>
+<body>
+  <main id="app" aria-label="الملوك">
+    <section id="approvedHome">
+      <header class="app-header">
+        <h1>الملوك</h1>
+      </header>
+      <div class="app-content">
+        <p>أهلاً بكم في الملوك</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
