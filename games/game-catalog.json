@@ -1,8 +1,9 @@
 {
-  "title": "المحترفين في الطرنيب",
+  "title": "المحترفين في الألعاب",
   "policy": "لا تظهر اللعبة في الواجهة على أنها مكتملة إلا إذا كانت قواعدها ومحركها وAI والأونلاين واختباراتها جاهزة.",
   "games": [
     {"id":"tarneeb","name":"طرنيب","type":"cards","status":"core"},
+    {"id":"checkers","name":"داما","type":"board","status":"embedded-local"},
     {"id":"plakoto","name":"محبوسة","type":"board","status":"core"},
     {"id":"backgammon","name":"طاولة","type":"board","status":"planned"},
     {"id":"domino","name":"دومينو","type":"board","status":"planned"},
