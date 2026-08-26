@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="reference-layout.css">
   <link rel="stylesheet" href="social-ui.css">
   <link rel="stylesheet" href="ui-enhance.css">
+  <style>
+    .chat-layout{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(280px,1.4fr);gap:12px}.chat-list,.chat-panel{min-width:0}.chat-row{width:100%;display:flex;align-items:center;gap:10px;text-align:right;border:0;border-bottom:1px solid rgba(255,255,255,.07);background:transparent;color:inherit;padding:12px;cursor:pointer}.chat-row:hover{background:rgba(255,255,255,.05)}.chat-row small{display:block;opacity:.7;margin-top:3px}.chat-panel{display:flex;flex-direction:column;min-height:420px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}.chat-header{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid rgba(255,255,255,.08)}.chat-messages{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}.chat-bubble{max-width:78%;padding:9px 12px;border-radius:15px;background:rgba(255,255,255,.08);align-self:flex-start;word-break:break-word}.chat-bubble.mine{align-self:flex-end;background:rgba(70,120,255,.28)}.chat-bubble small{display:block;opacity:.55;margin-top:4px;font-size:10px}.chat-compose{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,255,255,.08)}.chat-compose input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(0,0,0,.2);color:inherit;padding:11px}.chat-empty{padding:20px;text-align:center;opacity:.7}@media(max-width:720px){.chat-layout{grid-template-columns:1fr}.chat-panel{min-height:55vh}}
+  </style>
 </head>
 <body>
   <main id="app" class="app" aria-label="الملوك">
@@ -33,21 +36,24 @@
         </div>
         <div class="social-card" style="margin-top:12px">
           <strong>المجتمع والتواصل</strong>
-          <span>الملف الشخصي والمنشورات والأصدقاء وVIP والأشخاص القريبون.</span>
-          <button class="btn btn-primary" type="button" onclick="window.openSocial('profile')" style="margin-top:10px">فتح الواجهة الاجتماعية</button>
+          <span>الملف الشخصي والمنشورات والأصدقاء وVIP والأشخاص القريبون والمحادثات.</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <button class="btn btn-primary" type="button" onclick="window.openSocial('profile')">فتح الواجهة الاجتماعية</button>
+            <button class="btn btn-secondary" type="button" onclick="window.openMessages()">المحادثات</button>
+          </div>
         </div>
-        <p class="hint">اختر لعبة أو افتح الواجهة الاجتماعية.</p>
+        <p class="hint">اختر لعبة أو افتح الواجهة الاجتماعية أو المحادثات.</p>
       </section>
       <section class="feature-grid" aria-label="مكونات النظام">
         <article class="feature"><div class="feature-icon">👤</div><strong>الملف الشخصي</strong><span>مكان مخصص لبيانات المستخدم وملفه.</span></article>
-        <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة اجتماعية قابلة للتوسعة.</span></article>
+        <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة اجتماعية ومحادثات خاصة.</span></article>
         <article class="feature"><div class="feature-icon">★</div><strong>الألعاب</strong><span>طرنيب وطاولة الزهر وداما.</span></article>
       </section>
     </section>
     <section id="socialHub" class="panel social-hub hidden" aria-label="الواجهة الاجتماعية">
       <div class="post-head">
         <div>
-          <div class="eyebrow">المحترفين</div>
+          <div class="eyebrow">الملوك</div>
           <h2 id="socialTitle">ملفي الشخصي</h2>
         </div>
         <button class="btn btn-secondary" type="button" onclick="window.closeSocial()">العودة</button>
@@ -58,47 +64,24 @@
         <button class="btn btn-secondary" type="button" onclick="window.openSocial('friends')">الأصدقاء</button>
         <button class="btn btn-secondary" type="button" onclick="window.openSocial('vip')">VIP</button>
         <button class="btn btn-secondary" type="button" onclick="window.openSocial('nearby')">القريبون</button>
+        <button class="btn btn-primary" type="button" onclick="window.openMessages()">المحادثات</button>
       </nav>
       <div id="socialStatus" class="status-line" aria-live="polite"></div>
       <div id="socialContent"></div>
     </section>
   </main>
   <script>
-    // Load the registry only when a game is requested. This keeps the landing page usable
-    // even if one game module has a transient loading error.
     const gameButtons = document.querySelectorAll('[data-game]');
     gameButtons.forEach(button => {
       button.addEventListener('click', async () => {
-        const id = button.dataset.game;
-        button.disabled = true;
-        const originalText = button.textContent;
-        button.textContent = 'جاري الفتح...';
-        try {
-          const registry = await import('./games/registry.js');
-          if (typeof registry.launchGame !== 'function') throw new Error('Game registry unavailable');
-          registry.launchGame(id);
-        } catch (error) {
-          console.error('Game launch failed', id, error);
-          if (id === 'backgammon') {
-            const old = document.getElementById('backgammonFallback');
-            if (old) old.remove();
-            const root = document.createElement('section');
-            root.id = 'backgammonFallback';
-            root.dir = 'rtl';
-            root.style.cssText = 'position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#07101d,#0d1727);color:#fff;display:flex;flex-direction:column;overflow:auto;font-family:inherit;';
-            root.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,16,29,.96);border-bottom:1px solid rgba(255,255,255,.08)"><b style="font-size:20px">طاولة الزهر</b><button id="bgFallbackClose" type="button" style="border:0;border-radius:12px;padding:9px 12px;background:#26364b;color:#fff">رجوع</button></div><div style="width:min(94vw,700px);margin:18px auto;padding:0 8px 28px"><div style="padding:28px;border-radius:20px;background:#164b35;text-align:center;min-height:220px;display:flex;align-items:center;justify-content:center"><div><div style="font-size:38px">⚂ ⚄</div><strong style="display:block;margin-top:12px">طاولة الزهر جاهزة</strong><span style="display:block;margin-top:6px;opacity:.75">تم فتح مسار اللعبة</span></div></div></div>';
-            document.body.appendChild(root);
-            root.querySelector('#bgFallbackClose').onclick = () => root.remove();
-          } else {
-            alert('تعذر فتح اللعبة حالياً');
-          }
-        } finally {
-          button.disabled = false;
-          button.textContent = originalText;
-        }
+        const id = button.dataset.game; button.disabled = true; const originalText = button.textContent; button.textContent = 'جاري الفتح...';
+        try { const registry = await import('./games/registry.js'); if (typeof registry.launchGame !== 'function') throw new Error('Game registry unavailable'); registry.launchGame(id); }
+        catch(error){ console.error('Game launch failed',id,error); if(id==='backgammon'){ const old=document.getElementById('backgammonFallback'); if(old)old.remove(); const root=document.createElement('section'); root.id='backgammonFallback'; root.dir='rtl'; root.style.cssText='position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#07101d,#0d1727);color:#fff;display:flex;flex-direction:column;overflow:auto;font-family:inherit;'; root.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,16,29,.96);border-bottom:1px solid rgba(255,255,255,.08)"><b style="font-size:20px">طاولة الزهر</b><button id="bgFallbackClose" type="button" style="border:0;border-radius:12px;padding:9px 12px;background:#26364b;color:#fff">رجوع</button></div><div style="width:min(94vw,700px);margin:18px auto;padding:0 8px 28px"><div style="padding:28px;border-radius:20px;background:#164b35;text-align:center;min-height:220px;display:flex;align-items:center;justify-content:center"><div><div style="font-size:38px">⚂ ⚄</div><strong style="display:block;margin-top:12px">طاولة الزهر جاهزة</strong><span style="display:block;margin-top:6px;opacity:.75">تم فتح مسار اللعبة</span></div></div></div>'; document.body.appendChild(root); root.querySelector('#bgFallbackClose').onclick=()=>root.remove(); } else alert('تعذر فتح اللعبة حالياً'); }
+        finally{button.disabled=false;button.textContent=originalText;}
       });
     });
   </script>
   <script type="module" src="./social-ui.js"></script>
+  <script type="module" src="./chat-ui.js"></script>
 </body>
 </html>
