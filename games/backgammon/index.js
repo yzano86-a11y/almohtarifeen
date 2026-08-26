@@ -1,3 +1,10 @@
 // Backgammon game launcher
-export function startBackgammon(){const game=document.getElementById('game');if(!game)return;game.classList.remove('hidden');game.dataset.activeGame='backgammon';const title=game.querySelector('.game-title strong');if(title)title.textContent='Backgammon'}
-export default{startBackgammon};
+export function startBackgammon(container = document.getElementById('app')) {
+  if (!container) throw new Error('Backgammon container not found');
+  const old = document.getElementById('backgammonOverlay'); if (old) old.remove();
+  const root = document.createElement('section'); root.id = 'backgammonOverlay'; root.dir = 'rtl';
+  root.style.cssText = 'position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#07101d,#0d1727);color:#fff;display:flex;flex-direction:column;overflow:auto;font-family:inherit;';
+  root.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:rgba(7,16,29,.96);border-bottom:1px solid rgba(255,255,255,.08)"><div><b style="font-size:20px">طاولة الزهر</b><div style="opacity:.72;font-size:12px">الطاولة جاهزة</div></div><button id="bgClose" type="button" style="border:0;border-radius:12px;padding:9px 12px;background:#26364b;color:#fff">رجوع</button></div><div style="width:min(94vw,700px);margin:18px auto;padding:0 8px 28px"><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"><div style="padding:20px;border-radius:16px;background:#18283a;text-align:center"><b>اللاعب 1</b><div style="margin-top:8px;opacity:.75">جاهز للعب</div></div><div style="padding:20px;border-radius:16px;background:#18283a;text-align:center"><b>اللاعب 2</b><div style="margin-top:8px;opacity:.75">جاهز للعب</div></div></div><div style="margin-top:14px;padding:28px;border-radius:20px;background:#164b35;text-align:center;min-height:220px;display:flex;align-items:center;justify-content:center"><div><div style="font-size:38px">⚂ ⚄</div><strong style="display:block;margin-top:12px">طاولة الزهر جاهزة</strong><span style="display:block;margin-top:6px;opacity:.75">تم فتح مسار اللعبة بنجاح</span></div></div></div>';
+  document.body.appendChild(root); root.querySelector('#bgClose').onclick = () => root.remove(); return root;
+}
+export default { startBackgammon };
