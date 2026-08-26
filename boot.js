@@ -48,7 +48,6 @@ async function launchGuest(event){
     launching=false;
   }
 }
-// Expose the same launcher used by the enhanced UI so every entry point shares one path.
 window.__launchGuest=launchGuest;
 function isGuestButton(el){
   return !!el&&el.tagName==='BUTTON'&&((el.getAttribute('onclick')||'').includes('guestPlay'));
@@ -61,3 +60,30 @@ document.addEventListener('pointerup',event=>{
   const el=event.target?.closest?.('button');
   if(isGuestButton(el))launchGuest(event);
 },true);
+
+// Embedded free checkers launcher. The current Almohtarifeen deployment is a static
+// Cloudflare app, so the embedded build is local two-player; the upstream online
+// Socket.IO server is intentionally not faked or silently substituted.
+let checkersModule=null;
+async function launchCheckers(){
+  try{
+    checkersModule ??= await import('./games/checkers/index.js?v=20260826-checkers1');
+    checkersModule.startCheckers();
+  }catch(err){
+    console.error('Checkers load failed',err);
+    alert('تعذر تحميل لعبة الداما: '+(err?.message||err));
+  }
+}
+window.launchCheckers=launchCheckers;
+function installCheckersLauncher(){
+  const nav=document.querySelector('.approved-cats');
+  if(!nav || nav.querySelector('[data-checkers-launcher]'))return;
+  const b=document.createElement('button');
+  b.type='button';
+  b.dataset.checkersLauncher='1';
+  b.innerHTML='الداما<br><small>لعبة جاهزة</small>';
+  b.addEventListener('click',launchCheckers);
+  nav.appendChild(b);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installCheckersLauncher,{once:true});
+else installCheckersLauncher();
