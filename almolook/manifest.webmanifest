@@ -1,0 +1,14 @@
+{
+  "name": "الملوك",
+  "short_name": "الملوك",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d1422",
+  "theme_color": "#0d1422",
+  "description": "الملوك — منصة ألعاب اجتماعية",
+  "icons": [
+    {"src":"../assets/icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}
