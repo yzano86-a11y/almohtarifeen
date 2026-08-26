@@ -1,0 +1,57 @@
+name: Import SupaSocial Core
+
+on:
+  push:
+    branches: [social-integration-test]
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    if: github.event.head_commit.message != 'chore: import SupaSocial core'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Mلوك
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Import SupaSocial source
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/supasocial
+          git clone --depth 1 https://github.com/koji0701/supabase-react-social-media-starter.git /tmp/supasocial
+          rm -rf social-core
+          mkdir -p social-core
+          cp -R /tmp/supasocial/src social-core/src
+          cp -R /tmp/supasocial/supabase social-core/supabase
+          cp -R /tmp/supasocial/public social-core/public
+          cp /tmp/supasocial/package.json social-core/package.json
+          cp /tmp/supasocial/package-lock.json social-core/package-lock.json
+          cp /tmp/supasocial/tsconfig.json social-core/tsconfig.json
+          cp /tmp/supasocial/tsconfig.app.json social-core/tsconfig.app.json
+          cp /tmp/supasocial/tsconfig.node.json social-core/tsconfig.node.json
+          cp /tmp/supasocial/vite.config.ts social-core/vite.config.ts
+          cp /tmp/supasocial/tailwind.config.ts social-core/tailwind.config.ts
+          cp /tmp/supasocial/postcss.config.js social-core/postcss.config.js
+          cp /tmp/supasocial/components.json social-core/components.json
+          cp /tmp/supasocial/eslint.config.js social-core/eslint.config.js
+          cp /tmp/supasocial/SUPABASE.md social-core/SUPABASE.md
+          cp /tmp/supasocial/LICENSE social-core/SUPASOCIAL-LICENSE
+
+      - name: Install and build imported core
+        working-directory: social-core
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build
+
+      - name: Commit imported core
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social-core
+          git commit -m "chore: import SupaSocial core" || exit 0
+          git push origin HEAD:social-integration-test
