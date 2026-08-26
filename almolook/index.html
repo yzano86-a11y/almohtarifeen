@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101d">
+<meta name="description" content="الملوك — منصة ألعاب اجتماعية">
+<title>الملوك</title>
+<link rel="stylesheet" href="../style.css?v=20260823-v4">
+<link rel="stylesheet" href="../ui-enhance.css?v=20260823-v4">
+<link rel="stylesheet" href="../pro-ui.css?v=20260823-v4">
+<link rel="stylesheet" href="../social-ui.css?v=20260823-v4">
+<link rel="stylesheet" href="../reference-layout.css?v=20260824-ref">
+</head>
+<body class="reference-layout">
+<!-- نفس واجهة المحترفين الأصلية، مع إبقاء الملفات المشتركة في المشروع الأساسي. -->
+<script type="module" src="../app.js"></script>
+<script>
+(function(){
+  const OLD='المحترفين', NEW='الملوك';
+  function rename(root){
+    if(root.nodeType===Node.TEXT_NODE){
+      if(root.nodeValue && root.nodeValue.includes(OLD)) root.nodeValue=root.nodeValue.split(OLD).join(NEW);
+      return;
+    }
+    if(root.nodeType!==Node.ELEMENT_NODE) return;
+    if(root.tagName==='SCRIPT' || root.tagName==='STYLE') return;
+    if(root.hasAttribute('aria-label')) root.setAttribute('aria-label',root.getAttribute('aria-label').split(OLD).join(NEW));
+    if(root.hasAttribute('title')) root.setAttribute('title',root.getAttribute('title').split(OLD).join(NEW));
+    for(const child of root.childNodes) rename(child);
+  }
+  const apply=()=>{rename(document.body);document.title=NEW;};
+  const observer=new MutationObserver(()=>apply());
+  window.addEventListener('DOMContentLoaded',()=>{apply();observer.observe(document.body,{subtree:true,childList:true,characterData:true});});
+})();
+</script>
+</body>
+</html>
