@@ -2,7 +2,14 @@ name: Social UI Integration
 
 on:
   push:
-    branches: [fix/social-ui-wiring-verified, main]
+    branches: [main, fix/social-ui-wiring-verified]
+    paths:
+      - 'index.html'
+      - 'social-ui.js'
+      - 'chat-ui.js'
+      - 'games/**'
+      - 'tests/social-ui-wiring.test.mjs'
+      - '.github/workflows/social-integration.yml'
   workflow_dispatch:
 
 permissions:
@@ -12,8 +19,10 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
       - name: Verify social UI and game entrypoint
