@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#090a16">
   <meta name="application-name" content="الملوك">
+  <meta name="description" content="الملوك — الواجهة الأساسية للنظام">
   <title>الملوك</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="pro-ui.css">
@@ -13,14 +14,42 @@
   <link rel="stylesheet" href="ui-enhance.css">
 </head>
 <body>
-  <main id="app" aria-label="الملوك">
-    <section id="approvedHome">
-      <header class="app-header">
-        <h1>الملوك</h1>
-      </header>
-      <div class="app-content">
-        <p>أهلاً بكم في الملوك</p>
+  <main id="app" class="app" aria-label="الملوك">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span>♠</span><span>♦</span></div>
+        <div><strong>الملوك</strong><small>منصة اجتماعية وترفيهية</small></div>
       </div>
+      <div class="online"><i class="dot"></i><span>النظام جاهز</span></div>
+    </header>
+
+    <section class="landing-shell">
+      <section class="panel hero" id="home">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="deck-logo" aria-hidden="true">
+          <div class="card-back"><b>♠</b><span>الملوك</span></div>
+          <div class="card-front">♦</div>
+        </div>
+        <div class="eyebrow">أهلاً بك في</div>
+        <h1><em>الملوك</em></h1>
+        <p class="subtitle">واجهة النظام الأساسية جاهزة، بدون لعبة أو وظائف إضافية مفروضة.</p>
+        <div class="stats" aria-label="معلومات النظام">
+          <div class="stat-pill"><b>✓</b><span>الواجهة</span></div>
+          <div class="stat-pill"><b>✓</b><span>النظام</span></div>
+          <div class="stat-pill"><b>0</b><span>ألعاب مفعلة</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary btn-hero" type="button">الدخول إلى الملوك</button>
+          <button class="btn btn-secondary" type="button">التجربة</button>
+        </div>
+        <p class="hint">هذه النسخة تحافظ على الواجهة فقط ولا تشغّل نظام لعبة.</p>
+      </section>
+
+      <section class="feature-grid" aria-label="مكونات النظام">
+        <article class="feature"><div class="feature-icon">👤</div><strong>الملف الشخصي</strong><span>مكان مخصص لبيانات المستخدم وملفه.</span></article>
+        <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة جاهزة لإضافة ميزات التواصل لاحقاً.</span></article>
+        <article class="feature"><div class="feature-icon">★</div><strong>النظام</strong><span>بنية واجهة قابلة للتوسعة بدون ربط لعبة حالياً.</span></article>
+      </section>
     </section>
   </main>
 </body>
