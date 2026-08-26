@@ -1,4 +1,5 @@
 import { startBackgammon } from './backgammon/index.js';
+import { startCheckers } from './checkers/index.js';
 
 export const games = {
   tarneeb: {
@@ -9,6 +10,11 @@ export const games = {
     id: 'backgammon',
     name: 'طاولة الزهر',
     start: startBackgammon
+  },
+  checkers: {
+    id: 'checkers',
+    name: 'داما',
+    start: startCheckers
   }
 };
 
