@@ -1,0 +1,27 @@
+name: Almolook Build Check
+
+on:
+  push:
+    branches: [ almolook ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build Almolook
+        run: npm run build
+      - name: Verify Almolook output
+        run: test -f dist/almolook/index.html && test -f dist/almolook/manifest.webmanifest && test -d dist/games
