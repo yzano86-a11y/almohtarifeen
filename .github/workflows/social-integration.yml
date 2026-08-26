@@ -1,0 +1,20 @@
+name: Social UI Integration
+
+on:
+  push:
+    branches: [fix/social-ui-wiring-verified, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify social UI and game entrypoint
+        run: node --test tests/social-ui-wiring.test.mjs

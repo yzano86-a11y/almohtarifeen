@@ -31,13 +31,36 @@
           <button class="btn btn-secondary" type="button" data-game="backgammon">طاولة الزهر</button>
           <button class="btn btn-secondary" type="button" data-game="checkers">داما</button>
         </div>
-        <p class="hint">اختر لعبة لفتحها.</p>
+        <div class="social-card" style="margin-top:12px">
+          <strong>المجتمع والتواصل</strong>
+          <span>الملف الشخصي والمنشورات والأصدقاء وVIP والأشخاص القريبون.</span>
+          <button class="btn btn-primary" type="button" onclick="window.openSocial('profile')" style="margin-top:10px">فتح الواجهة الاجتماعية</button>
+        </div>
+        <p class="hint">اختر لعبة أو افتح الواجهة الاجتماعية.</p>
       </section>
       <section class="feature-grid" aria-label="مكونات النظام">
         <article class="feature"><div class="feature-icon">👤</div><strong>الملف الشخصي</strong><span>مكان مخصص لبيانات المستخدم وملفه.</span></article>
         <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة اجتماعية قابلة للتوسعة.</span></article>
         <article class="feature"><div class="feature-icon">★</div><strong>الألعاب</strong><span>طرنيب وطاولة الزهر وداما.</span></article>
       </section>
+    </section>
+    <section id="socialHub" class="panel social-hub hidden" aria-label="الواجهة الاجتماعية">
+      <div class="post-head">
+        <div>
+          <div class="eyebrow">المحترفين</div>
+          <h2 id="socialTitle">ملفي الشخصي</h2>
+        </div>
+        <button class="btn btn-secondary" type="button" onclick="window.closeSocial()">العودة</button>
+      </div>
+      <nav class="social-nav" aria-label="أقسام المجتمع">
+        <button class="btn btn-secondary" type="button" onclick="window.openSocial('profile')">ملفي</button>
+        <button class="btn btn-secondary" type="button" onclick="window.openSocial('feed')">المنشورات</button>
+        <button class="btn btn-secondary" type="button" onclick="window.openSocial('friends')">الأصدقاء</button>
+        <button class="btn btn-secondary" type="button" onclick="window.openSocial('vip')">VIP</button>
+        <button class="btn btn-secondary" type="button" onclick="window.openSocial('nearby')">القريبون</button>
+      </nav>
+      <div id="socialStatus" class="status-line" aria-live="polite"></div>
+      <div id="socialContent"></div>
     </section>
   </main>
   <script type="module">
@@ -49,5 +72,6 @@
       });
     });
   </script>
+  <script type="module" src="./social-ui.js"></script>
 </body>
 </html>
