@@ -13,3 +13,5 @@ export function launchGame(id){
   if (!game?.start) throw new Error(`Game launcher unavailable: ${id}`);
   return game.start();
 }
+
+// CI trigger: verify the integrated game registry on main.
