@@ -25,3 +25,8 @@ test('main entrypoint keeps the three game launchers', () => {
   assert.match(registry, /backgammon/);
   assert.match(registry, /checkers/);
 });
+
+// CI trigger marker: rerun verification after workflow wiring fix.
+test('CI verification marker', () => {
+  assert.ok(true);
+});
