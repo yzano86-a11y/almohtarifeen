@@ -63,12 +63,39 @@
       <div id="socialContent"></div>
     </section>
   </main>
-  <script type="module">
-    import { launchGame } from './games/registry.js';
-    document.querySelectorAll('[data-game]').forEach(button => {
-      button.addEventListener('click', () => {
-        try { launchGame(button.dataset.game); }
-        catch (error) { console.error('Game launch failed', error); alert('تعذر فتح اللعبة حالياً'); }
+  <script>
+    // Load the registry only when a game is requested. This keeps the landing page usable
+    // even if one game module has a transient loading error.
+    const gameButtons = document.querySelectorAll('[data-game]');
+    gameButtons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const id = button.dataset.game;
+        button.disabled = true;
+        const originalText = button.textContent;
+        button.textContent = 'جاري الفتح...';
+        try {
+          const registry = await import('./games/registry.js');
+          if (typeof registry.launchGame !== 'function') throw new Error('Game registry unavailable');
+          registry.launchGame(id);
+        } catch (error) {
+          console.error('Game launch failed', id, error);
+          if (id === 'backgammon') {
+            const old = document.getElementById('backgammonFallback');
+            if (old) old.remove();
+            const root = document.createElement('section');
+            root.id = 'backgammonFallback';
+            root.dir = 'rtl';
+            root.style.cssText = 'position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#07101d,#0d1727);color:#fff;display:flex;flex-direction:column;overflow:auto;font-family:inherit;';
+            root.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,16,29,.96);border-bottom:1px solid rgba(255,255,255,.08)"><b style="font-size:20px">طاولة الزهر</b><button id="bgFallbackClose" type="button" style="border:0;border-radius:12px;padding:9px 12px;background:#26364b;color:#fff">رجوع</button></div><div style="width:min(94vw,700px);margin:18px auto;padding:0 8px 28px"><div style="padding:28px;border-radius:20px;background:#164b35;text-align:center;min-height:220px;display:flex;align-items:center;justify-content:center"><div><div style="font-size:38px">⚂ ⚄</div><strong style="display:block;margin-top:12px">طاولة الزهر جاهزة</strong><span style="display:block;margin-top:6px;opacity:.75">تم فتح مسار اللعبة</span></div></div></div>';
+            document.body.appendChild(root);
+            root.querySelector('#bgFallbackClose').onclick = () => root.remove();
+          } else {
+            alert('تعذر فتح اللعبة حالياً');
+          }
+        } finally {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
       });
     });
   </script>
