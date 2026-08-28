@@ -26,6 +26,18 @@ jobs:
           grep -q 'data-game="bullem"' index.html
           test -f wrangler.jsonc
 
+      - name: Prepare deploy assets
+        run: |
+          set -euo pipefail
+          rm -rf .cloudflare-assets
+          mkdir -p .cloudflare-assets
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'node_modules' \
+            --exclude '.cloudflare-assets' \
+            ./ .cloudflare-assets/
+
       - name: Deploy static assets to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
