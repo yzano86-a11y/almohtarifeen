@@ -272,3 +272,23 @@
 .royal-hand .royal-card{
   background:linear-gradient(135deg,#fffdf7,#eee3cb)!important;
 }
+
+
+/* Ensure bidding controls are always visible and clickable above the table */
+.royal-center{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  z-index:50!important;
+  pointer-events:auto!important;
+}
+.royal-bid-panel{
+  position:relative!important;
+  z-index:51!important;
+  pointer-events:auto!important;
+}
+.royal-bid-panel button{
+  pointer-events:auto!important;
+  touch-action:manipulation;
+}
