@@ -9,7 +9,7 @@ const rankPower={A:14,K:13,Q:12,J:11,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4
 function cardHTML(card,{playable=false,selected=false}={}){
   const red=RED.has(card.s)?' is-red':'';
   return `<button class="royal-card${red}${playable?' is-playable':''}${selected?' is-selected':''}" type="button" data-card="${card.s}|${card.r}" ${playable?'':'disabled'} aria-label="${card.r} ${card.s}">
-    <span class="royal-card-rank">${card.r}</span><span class="royal-card-suit">${card.s}</span><span class="royal-card-crown">♛</span>
+    <span class="royal-card-rank">${card.r}</span><span class="royal-card-suit">${card.s}</span><span class="royal-card-crown">${card.s}</span>
   </button>`;
 }
 function backHTML(count){return `<div class="royal-backs">${Array.from({length:Math.min(count,7)},()=>'<i><span>♛</span></i>').join('')}</div>`}
