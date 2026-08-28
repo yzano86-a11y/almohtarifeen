@@ -151,3 +151,20 @@
  .royal-card{flex-basis:59px;width:59px;height:94px;margin-left:-16px}
  .royal-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 }
+
+
+/* Live Tarneeb AI play surface */
+.royal-trick{position:absolute;inset:0;z-index:7;pointer-events:none}
+.trick-card{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;filter:drop-shadow(0 10px 10px #0009)}
+.trick-card>span{font-size:9px;color:#f0d48b;background:#08111bd9;border:1px solid #b88732;border-radius:9px;padding:2px 6px}
+.trick-card .royal-card{margin:0;transform:none!important;pointer-events:none}
+.trick-p0{left:50%;bottom:18%;transform:translateX(-50%)}
+.trick-p1{right:25%;top:50%;transform:translate(50%,-50%)}
+.trick-p2{left:50%;top:24%;transform:translateX(-50%)}
+.trick-p3{left:25%;top:50%;transform:translate(-50%,-50%)}
+.royal-controls button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:600px){
+ .trick-card .royal-card{flex-basis:46px;width:46px;height:72px}
+ .trick-card .royal-card-rank{font-size:14px}.trick-card .royal-card-suit{font-size:13px;top:20px}.trick-card .royal-card-crown{font-size:26px}
+ .trick-p0{bottom:14%}.trick-p2{top:28%}.trick-p1{right:30%}.trick-p3{left:30%}
+}
