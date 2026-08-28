@@ -28,11 +28,12 @@
         <div class="deck-logo" aria-hidden="true"><div class="card-back"><b>♠</b><span>الملوك</span></div><div class="card-front">♦</div></div>
         <div class="eyebrow">أهلاً بك في</div><h1><em>الملوك</em></h1>
         <p class="subtitle">منصة اجتماعية وترفيهية تجمع الألعاب والتواصل في مكان واحد.</p>
-        <div class="stats" aria-label="معلومات النظام"><div class="stat-pill"><b>✓</b><span>الواجهة</span></div><div class="stat-pill"><b>✓</b><span>النظام</span></div><div class="stat-pill"><b>3</b><span>ألعاب مفعلة</span></div></div>
+        <div class="stats" aria-label="معلومات النظام"><div class="stat-pill"><b>✓</b><span>الواجهة</span></div><div class="stat-pill"><b>✓</b><span>النظام</span></div><div class="stat-pill"><b>4</b><span>ألعاب مفعلة</span></div></div>
         <div class="actions">
           <button class="btn btn-primary btn-hero" type="button" data-game="tarneeb">طرنيب</button>
           <button class="btn btn-secondary" type="button" data-game="backgammon">طاولة الزهر</button>
           <button class="btn btn-secondary" type="button" data-game="checkers">داما</button>
+          <button class="btn btn-secondary" type="button" data-game="bullem">البلّ</button>
         </div>
         <div class="social-card" style="margin-top:12px">
           <strong>المجتمع والتواصل</strong>
@@ -47,15 +48,12 @@
       <section class="feature-grid" aria-label="مكونات النظام">
         <article class="feature"><div class="feature-icon">👤</div><strong>الملف الشخصي</strong><span>مكان مخصص لبيانات المستخدم وملفه.</span></article>
         <article class="feature"><div class="feature-icon">💬</div><strong>التواصل</strong><span>واجهة اجتماعية ومحادثات خاصة.</span></article>
-        <article class="feature"><div class="feature-icon">★</div><strong>الألعاب</strong><span>طرنيب وطاولة الزهر وداما.</span></article>
+        <article class="feature"><div class="feature-icon">★</div><strong>الألعاب</strong><span>طرنيب وطاولة الزهر وداما والبلّ.</span></article>
       </section>
     </section>
     <section id="socialHub" class="panel social-hub hidden" aria-label="الواجهة الاجتماعية">
       <div class="post-head">
-        <div>
-          <div class="eyebrow">الملوك</div>
-          <h2 id="socialTitle">ملفي الشخصي</h2>
-        </div>
+        <div><div class="eyebrow">الملوك</div><h2 id="socialTitle">ملفي الشخصي</h2></div>
         <button class="btn btn-secondary" type="button" onclick="window.closeSocial()">العودة</button>
       </div>
       <nav class="social-nav" aria-label="أقسام المجتمع">
@@ -76,7 +74,7 @@
       button.addEventListener('click', async () => {
         const id = button.dataset.game; button.disabled = true; const originalText = button.textContent; button.textContent = 'جاري الفتح...';
         try { const registry = await import('./games/registry.js'); if (typeof registry.launchGame !== 'function') throw new Error('Game registry unavailable'); registry.launchGame(id); }
-        catch(error){ console.error('Game launch failed',id,error); if(id==='backgammon'){ const old=document.getElementById('backgammonFallback'); if(old)old.remove(); const root=document.createElement('section'); root.id='backgammonFallback'; root.dir='rtl'; root.style.cssText='position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#07101d,#0d1727);color:#fff;display:flex;flex-direction:column;overflow:auto;font-family:inherit;'; root.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,16,29,.96);border-bottom:1px solid rgba(255,255,255,.08)"><b style="font-size:20px">طاولة الزهر</b><button id="bgFallbackClose" type="button" style="border:0;border-radius:12px;padding:9px 12px;background:#26364b;color:#fff">رجوع</button></div><div style="width:min(94vw,700px);margin:18px auto;padding:0 8px 28px"><div style="padding:28px;border-radius:20px;background:#164b35;text-align:center;min-height:220px;display:flex;align-items:center;justify-content:center"><div><div style="font-size:38px">⚂ ⚄</div><strong style="display:block;margin-top:12px">طاولة الزهر جاهزة</strong><span style="display:block;margin-top:6px;opacity:.75">تم فتح مسار اللعبة</span></div></div></div>'; document.body.appendChild(root); root.querySelector('#bgFallbackClose').onclick=()=>root.remove(); } else alert('تعذر فتح اللعبة حالياً'); }
+        catch(error){ console.error('Game launch failed',id,error); if(id==='backgammon'){ const old=document.getElementById('backgammonFallback'); if(old)old.remove(); const r=document.createElement('section'); r.id='backgammonFallback'; r.dir='rtl'; r.style.cssText='position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#07101d,#0d1727);color:#fff;display:flex;flex-direction:column;overflow:auto;font-family:inherit;'; r.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,16,29,.96);border-bottom:1px solid rgba(255,255,255,.08)"><b style="font-size:20px">طاولة الزهر</b><button id="bgFallbackClose" type="button" style="border:0;border-radius:12px;padding:9px 12px;background:#26364b;color:#fff">رجوع</button></div><div style="width:min(94vw,700px);margin:18px auto;padding:0 8px 28px"><div style="padding:28px;border-radius:20px;background:#164b35;text-align:center;min-height:220px;display:flex;align-items:center;justify-content:center"><div><div style="font-size:38px">⚂ ⚄</div><strong style="display:block;margin-top:12px">طاولة الزهر جاهزة</strong><span style="display:block;margin-top:6px;opacity:.75">تم فتح مسار اللعبة</span></div></div></div>'; document.body.appendChild(r); r.querySelector('#bgFallbackClose').onclick=()=>r.remove(); } else alert('تعذر فتح اللعبة حالياً'); }
         finally{button.disabled=false;button.textContent=originalText;}
       });
     });
