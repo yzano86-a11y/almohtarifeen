@@ -1,6 +1,6 @@
 import { dealHands, newState } from './engine.js';
 
-const NAMES=['أنت','الملك','الأميرة','الفارس'];
+const NAMES=['أنت','الملكة','الأسطورة','القيصر'];
 const RED=new Set(['♥','♦']);
 
 function cardHTML(card, playable=false){
@@ -29,7 +29,7 @@ export function startTarneeb(container = document.getElementById('app')) {
     <header class="tarneeb-royal-head">
       <button class="tarneeb-back-btn" type="button" aria-label="رجوع">‹</button>
       <div class="tarneeb-brand"><span>♛</span><strong>الملوك</strong><small>طرنيب</small></div>
-      <div class="tarneeb-round">الجولة 1<br><b>المزايدة</b></div>
+      <div class="tarneeb-round">الطاولة رقم 2458<br><b>مغلقة · 4 لاعبين</b></div>
     </header>
 
     <main class="royal-table" role="application" aria-label="طاولة طرنيب الملوك">
@@ -51,22 +51,20 @@ export function startTarneeb(container = document.getElementById('app')) {
 
         <div class="royal-center">
           <div class="royal-deck"><span>♛</span><small>الملوك</small></div>
-          <div class="royal-status">دور المزايدة — اختر مزايدتك</div>
+          <div class="royal-status">الرمية<br><b>اختر حركتك</b></div>
         </div>
       </div>
 
       <section class="royal-hand-panel" aria-label="أوراقك">
-        <div class="royal-hand-head"><b>أوراقك</b><span>13 ورقة</span></div>
+        <div class="royal-hand-head"><b>أوراقك الملكية</b><span>13 ورقة</span></div>
         <div class="royal-hand">${state.players[0].hand.map(c=>cardHTML(c,true)).join('')}</div>
       </section>
 
       <section class="royal-controls">
-        <button type="button" data-bid="pass">تمرير</button>
-        <button type="button" data-bid="7">7</button>
-        <button type="button" data-bid="8">8</button>
-        <button type="button" data-bid="9">9</button>
-        <button type="button" data-bid="10">10</button>
-        <button type="button" class="royal-bid-main" data-bid="11">مزايدة 11</button>
+        <button type="button" data-bid="pass">انسحاب</button>
+        <button type="button" data-bid="20">♠ مزايدة 20</button>
+        <button type="button" data-bid="play">لعب</button>
+        <button type="button" class="royal-bid-main" data-bid="40">♠ مزايدة 40</button>
       </section>
     </main>`;
 
