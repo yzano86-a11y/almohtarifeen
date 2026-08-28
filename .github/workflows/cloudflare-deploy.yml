@@ -21,6 +21,9 @@ jobs:
           test -f index.html
           test -f games/registry.js
           test -f games/backgammon/index.js
+          test -f games/bullem/index.js
+          grep -q "bullem" games/registry.js
+          grep -q 'data-game="bullem"' index.html
           test -f wrangler.jsonc
 
       - name: Deploy static assets to Cloudflare Workers
