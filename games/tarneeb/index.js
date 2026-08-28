@@ -61,13 +61,14 @@ export function startTarneeb(container=document.getElementById('app')){
     const legal=state.phase==='play'&&state.turn===0?legalCards(state,0):[];
     const isBid=state.phase==='bid'&&state.bidTurn===0;
     const isTrump=state.phase==='trump'&&state.bidWinner===0;
-    const controls=isBid
-      ? `<button data-action="pass">تمرير</button>${[7,8,9,10,11,12,13].filter(n=>n>state.highBid).map(n=>`<button data-action="bid" data-value="${n}" class="${n===7?'royal-bid-main':''}">${n}</button>`).join('')}`
-      : isTrump
-        ? SUITS.map(s=>`<button data-action="trump" data-value="${s}" class="royal-bid-main">${s}</button>`).join('')
-        : state.phase==='round_end'
-          ? '<button data-action="new" class="royal-bid-main">جولة جديدة</button>'
-          : '<button disabled>اللعب جارٍ...</button>';
+    const bidPanel=isBid
+      ? `<section class="royal-bid-panel"><b>المزايدة</b><strong>${state.highBid>6?state.highBid:'—'}</strong><small>دورك للمزايدة</small><div class="royal-bid-grid">${[7,8,9,10,11,12,13].filter(n=>n>state.highBid).map(n=>`<button data-action="bid" data-value="${n}">${n}</button>`).join('')}</div><div class="royal-bid-actions"><button data-action="pass">تمرير</button></div></section>`
+      : '';
+    const controls=isTrump
+      ? SUITS.map(s=>`<button data-action="trump" data-value="${s}" class="royal-bid-main">${s}</button>`).join('')
+      : state.phase==='round_end'
+        ? '<button data-action="new" class="royal-bid-main">جولة جديدة</button>'
+        : '';
 
     const trick=state.trick.map(p=>`<div class="trick-card trick-p${p.player}"><span>${NAMES[p.player]}</span>${cardHTML(p.card)}</div>`).join('');
     screen.innerHTML=`
@@ -83,8 +84,7 @@ export function startTarneeb(container=document.getElementById('app')){
           <div class="royal-seat royal-seat-right"><div class="seat-name"><b>${NAMES[1]}</b><small>${state.players[1].hand.length} ورقة</small></div>${backHTML(state.players[1].hand.length)}</div>
           <div class="royal-seat royal-seat-left"><div class="seat-name"><b>${NAMES[3]}</b><small>${state.players[3].hand.length} ورقة</small></div>${backHTML(state.players[3].hand.length)}</div>
           <div class="royal-center">
-            <div class="royal-deck"><span>${state.trump||'♛'}</span><small>${state.trump?'الطرنيب':'الملوك'}</small></div>
-            <div class="royal-status">${status()}<br><small>المزايدة: ${state.highBid>6?state.highBid:'—'}</small></div>
+            ${bidPanel || `<div class="royal-deck"><span>${state.trump||'♛'}</span><small>${state.trump?'الطرنيب':'الملوك'}</small></div><div class="royal-status">${status()}<br><small>المزايدة: ${state.highBid>6?state.highBid:'—'}</small></div>`}
           </div>
           <div class="royal-trick">${trick}</div>
         </div>
@@ -92,7 +92,7 @@ export function startTarneeb(container=document.getElementById('app')){
           <div class="royal-hand-head"><b>أوراقك الملكية</b><span>${hand.length} ورقة · حيلك ${state.players[0].tricks}</span></div>
           <div class="royal-hand">${hand.map(c=>cardHTML(c,{playable:legal.some(x=>x.s===c.s&&x.r===c.r),selected:selected===c.s+'|'+c.r})).join('')}</div>
         </section>
-        <section class="royal-controls">${controls}</section>
+        ${controls?'<section class="royal-controls">'+controls+'</section>':''}
       </main>`;
 
     screen.querySelectorAll('[data-card]').forEach(btn=>btn.addEventListener('click',()=>{
