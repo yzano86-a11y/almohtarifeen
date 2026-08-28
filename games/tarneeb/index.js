@@ -2,7 +2,8 @@ import { dealHands, newState, applyBid, setTrump, applyCard, legalCards, SUITS }
 
 const NAMES=['أنت','الملكة','الأسطورة','القيصر'];
 const RED=new Set(['♥','♦']);
-const AI_DELAY=520;
+const AI_DELAY=1150;
+const TRICK_COLLECT_DELAY=950;
 const rankPower={A:14,K:13,Q:12,J:11,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2};
 
 function cardHTML(card,{playable=false,selected=false}={}){
@@ -34,6 +35,7 @@ export function startTarneeb(container=document.getElementById('app')){
   let selected=null;
   let busy=false;
   let aiTimer=null;
+  let collectedTrick=null;
 
   const screen=document.createElement('section');
   screen.className='tarneeb-screen royal-tarneeb';
@@ -70,7 +72,9 @@ export function startTarneeb(container=document.getElementById('app')){
         ? '<button data-action="new" class="royal-bid-main">جولة جديدة</button>'
         : '';
 
-    const trick=state.trick.map(p=>`<div class="trick-card trick-p${p.player}"><span>${NAMES[p.player]}</span>${cardHTML(p.card)}</div>`).join('');
+    const visibleTrick=(collectedTrick||state.trick);
+    const trick=visibleTrick.map(p=>`<div class="trick-card trick-p${p.player}"><span>${NAMES[p.player]}</span>${cardHTML(p.card)}</div>`).join('');
+    const collecting=!!collectedTrick;
     screen.innerHTML=`
       <header class="tarneeb-royal-head">
         <button class="tarneeb-back-btn" type="button" aria-label="رجوع">‹</button>
@@ -86,7 +90,7 @@ export function startTarneeb(container=document.getElementById('app')){
           <div class="royal-center">
             ${bidPanel || `<div class="royal-deck"><span>${state.trump||'♛'}</span><small>${state.trump?'الطرنيب':'الملوك'}</small></div><div class="royal-status">${status()}<br><small>المزايدة: ${state.highBid>6?state.highBid:'—'}</small></div>`}
           </div>
-          <div class="royal-trick">${trick}</div>
+          <div class="royal-trick${collecting?' is-collecting':''}">${trick}</div>
         </div>
         <section class="royal-hand-panel">
           <div class="royal-hand-head"><b>أوراقك الملكية</b><span>${hand.length} ورقة · حيلك ${state.players[0].tricks}</span></div>
@@ -100,8 +104,7 @@ export function startTarneeb(container=document.getElementById('app')){
       const card=cardFromKey(btn.dataset.card);
       if(!legalCards(state,0).some(c=>c.s===card.s&&c.r===card.r))return;
       selected=btn.dataset.card;
-      state=applyCard(state,0,card);
-      selected=null; render(); queueAI();
+      playTurn(0,card);
     }));
     screen.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
       if(busy)return;
@@ -111,6 +114,20 @@ export function startTarneeb(container=document.getElementById('app')){
       if(a==='trump'){state=setTrump(state,0,v);render();queueAI();}
       if(a==='new'){state=newState(dealHands(),0,state.scores);selected=null;render();queueAI();}
     }));
+  }
+
+  async function playTurn(player,card){
+    const completesTrick=state.trick.length===3;
+    if(completesTrick) collectedTrick=[...state.trick,{player,card}];
+    state=applyCard(state,player,card);
+    selected=null;
+    render();
+    if(completesTrick){
+      await new Promise(r=>setTimeout(r,TRICK_COLLECT_DELAY));
+      collectedTrick=null;
+      render();
+    }
+    queueAI();
   }
 
   async function queueAI(){
@@ -137,8 +154,16 @@ export function startTarneeb(container=document.getElementById('app')){
         if(state.turn===0||state.phase==='round_end')break;
         await new Promise(r=>setTimeout(r,AI_DELAY));
         const p=state.turn,card=aiCard(state,p);
+        const completesTrick=state.trick.length===3;
+        if(completesTrick) collectedTrick=[...state.trick,{player:p,card}];
         state=applyCard(state,p,card);
-        render(); continue;
+        render();
+        if(completesTrick){
+          await new Promise(r=>setTimeout(r,TRICK_COLLECT_DELAY));
+          collectedTrick=null;
+          render();
+        }
+        continue;
       }
       break;
     }
