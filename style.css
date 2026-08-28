@@ -196,3 +196,41 @@
   .royal-hand .royal-card-rank{font-size:10px}
   .royal-hand .royal-card-suit{font-size:10px;top:15px}
 }
+
+
+/* Final mobile play layout: visible bidding + larger hand */
+.royal-center{z-index:12}
+.royal-bid-panel{
+  width:min(360px,78vw);
+  padding:16px 14px;
+  border:1px solid #b98931;
+  border-radius:24px;
+  text-align:center;
+  background:linear-gradient(180deg,#0c1927f5,#061019f4);
+  box-shadow:0 18px 42px #0009,inset 0 0 0 1px #d8ab4a22;
+}
+.royal-bid-panel>b{display:block;font-size:20px;color:#f0d28a}
+.royal-bid-panel>strong{display:block;font-size:28px;line-height:1.1;color:#fff0b8;margin:5px 0}
+.royal-bid-panel>small{display:block;color:#c7b889;margin-bottom:12px}
+.royal-bid-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.royal-bid-grid button,.royal-bid-actions button{
+  min-height:46px;border-radius:13px;border:1px solid #b98931;
+  background:linear-gradient(180deg,#13263a,#09131e);color:#f1d891;font-size:17px;font-weight:900
+}
+.royal-bid-grid button:hover{transform:translateY(-2px);border-color:#f3cc67}
+.royal-bid-actions{margin-top:9px}
+.royal-bid-actions button{width:48%;color:#d9c9a0}
+.royal-hand .royal-card{
+  width:clamp(38px,8.5vw,72px);
+  min-height:60px;
+  margin-left:clamp(-14px,-1.8vw,-5px);
+}
+.royal-hand .royal-card-rank{font-size:clamp(12px,2.6vw,21px)}
+.royal-hand .royal-card-suit{font-size:clamp(12px,2.3vw,20px)}
+.royal-hand .royal-card-crown{font-size:clamp(22px,5.2vw,42px)}
+@media(max-width:600px){
+  .royal-bid-panel{width:min(330px,72vw);padding:13px 10px}
+  .royal-bid-panel>b{font-size:17px}.royal-bid-panel>strong{font-size:25px}
+  .royal-bid-grid button,.royal-bid-actions button{min-height:42px;font-size:15px}
+  .royal-hand .royal-card{width:clamp(34px,9.1vw,44px);min-height:58px;margin-left:clamp(-13px,-3vw,-8px)}
+}
