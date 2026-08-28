@@ -57,7 +57,6 @@ export function startTarneeb(container=document.getElementById('app')){
   }
 
   function render(){
-    if(aiTimer){ clearTimeout(aiTimer); aiTimer=null; }
     const hand=state.players[0].hand;
     const legal=state.phase==='play'&&state.turn===0?legalCards(state,0):[];
     const isBid=state.phase==='bid'&&state.bidTurn===0;
