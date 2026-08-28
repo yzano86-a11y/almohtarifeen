@@ -168,3 +168,31 @@
  .trick-card .royal-card-rank{font-size:14px}.trick-card .royal-card-suit{font-size:13px;top:20px}.trick-card .royal-card-crown{font-size:26px}
  .trick-p0{bottom:14%}.trick-p2{top:28%}.trick-p1{right:30%}.trick-p3{left:30%}
 }
+
+
+/* Mobile hand fit: all 13 cards stay within the screen */
+.royal-hand{
+  width:100%;
+  overflow:hidden;
+  justify-content:center;
+  gap:0;
+  padding:8px 3px 14px;
+}
+.royal-hand .royal-card{
+  flex:0 1 auto;
+  width:clamp(32px,7.25vw,68px);
+  height:auto;
+  aspect-ratio: 0.64 / 1;
+  min-height:52px;
+  margin-left:clamp(-16px,-2.1vw,-6px);
+}
+.royal-hand .royal-card:first-child{margin-left:0}
+.royal-hand .royal-card-rank{font-size:clamp(10px,2.2vw,20px);left:clamp(3px,.7vw,6px);top:clamp(2px,.5vw,5px)}
+.royal-hand .royal-card-suit{font-size:clamp(10px,2vw,19px);left:clamp(3px,.8vw,7px);top:clamp(15px,3vw,24px)}
+.royal-hand .royal-card-crown{font-size:clamp(19px,4.8vw,41px)}
+@media(max-width:420px){
+  .royal-hand{padding-left:1px;padding-right:1px}
+  .royal-hand .royal-card{width:clamp(30px,9.2vw,38px);margin-left:clamp(-14px,-3.6vw,-10px)}
+  .royal-hand .royal-card-rank{font-size:10px}
+  .royal-hand .royal-card-suit{font-size:10px;top:15px}
+}
