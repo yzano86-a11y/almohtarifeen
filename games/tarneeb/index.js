@@ -33,6 +33,7 @@ export function startTarneeb(container=document.getElementById('app')){
   let state=newState(dealHands());
   let selected=null;
   let busy=false;
+  let aiTimer=null;
 
   const screen=document.createElement('section');
   screen.className='tarneeb-screen royal-tarneeb';
@@ -56,6 +57,7 @@ export function startTarneeb(container=document.getElementById('app')){
   }
 
   function render(){
+    if(aiTimer){ clearTimeout(aiTimer); aiTimer=null; }
     const hand=state.players[0].hand;
     const legal=state.phase==='play'&&state.turn===0?legalCards(state,0):[];
     const isBid=state.phase==='bid'&&state.bidTurn===0;
@@ -118,7 +120,7 @@ export function startTarneeb(container=document.getElementById('app')){
     while(true){
       if(state.phase==='bid'){
         if(state.bidTurn===0)break;
-        await new Promise(r=>setTimeout(r,AI_DELAY));
+        await new Promise(r=>{ aiTimer=setTimeout(r,AI_DELAY); });
         const p=state.bidTurn;
         const bid=aiBid(state.players[p].hand,state.highBid);
         // Guarantee the table reaches a playable contract if everyone passed.
