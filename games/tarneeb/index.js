@@ -116,6 +116,7 @@ export function startTarneeb(container=document.getElementById('app')){
   async function queueAI(){
     if(busy)return;
     busy=true;
+    try {
     while(true){
       if(state.phase==='bid'){
         if(state.bidTurn===0)break;
@@ -141,7 +142,9 @@ export function startTarneeb(container=document.getElementById('app')){
       }
       break;
     }
-    busy=false;
+    } finally {
+      busy=false;
+    }
   }
 
   render();
